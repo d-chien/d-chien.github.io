@@ -1,3 +1,21 @@
-remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: pages-themes/minimal@v0.2.0 
 plugins:
-- jekyll-remote-theme # add this line to the plugins list if you already have one
+  - jekyll-remote-theme
+  - jekyll-github-metadata
+
+github:
+  username: DanielChien0308
+
+nav:
+  - title: "About"
+    url: "/"
+  - title: "Publications"
+    url: "/publications"
+  - title: "Papers with Code"
+    url: "/papers_with_code"
+  - title: "Packages"
+    url: "/packages"
+  - title: "Games"
+    url: "/games"
+  - title: "CV"
+    url: "/cv"
