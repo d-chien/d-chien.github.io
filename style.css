@@ -1,0 +1,60 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+h2 {
+    color:greenyellow
+}
+p {
+    color: green;
+    font-size: 20px;
+}
+a {
+    color:orange
+}
+header, footer, main {
+    background-color: pink;
+    border: 5px black dashed;
+    padding: 10px 5px 15px 5px;  
+    /* 4>> top right bottom left*/
+    /* 3>> top left&right bottom*/
+    /* 2>> top&down left&right*/
+    /* 1>> all surroundings*/
+    margin: 10px 5px;
+}
+
+header {
+    background-color: #9c523e;
+    height:80px;
+    width: 100vw;
+    margin: 0%;
+    border: 0px;
+    padding: 0;
+}
+h1 {
+    color: white;
+    position: absolute;
+    left: 100px;
+    top: 0;
+    line-height: 80px;
+}
+header a {
+    color: white;
+    text-decoration: none;
+}
+header a:hover {
+    text-decoration: underline;
+}
+header li {
+    display: inline;
+    margin: 4vw;
+    /* vw means view width percentage, so 4vw means margin set as 4% of view width, which allow margin respond with the size of your tab */
+
+}
+header ul {
+    position: absolute;
+    right: 5vw;
+    top: 0;
+    line-height: 80px;
+
+}
