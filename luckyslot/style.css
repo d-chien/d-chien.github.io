@@ -1,0 +1,134 @@
+/* 通用樣式設定 */
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: center;
+}
+
+main {
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 600px;
+}
+
+/* 標題與段落樣式 */
+h1, h2 {
+    color: #0056b3;
+}
+
+/* 拉霸機樣式 */
+#slot-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px; /* 數字輪之間的間距 */
+    margin-bottom: 20px;
+}
+
+.slot-wheel {
+    width: 100px;
+    height: 140px;
+    border: 3px solid #0056b3;
+    border-radius: 10px;
+    overflow: hidden; /* 隱藏數字輪滾動時超出邊界的部分 */
+    background-color: #e6f2ff;
+    position: relative;
+    font-size: 80px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease-out; /* 增加過渡效果，讓數字變換更流暢 */
+}
+
+/* 按鈕與輸入框樣式 */
+.controls, .settings-controls {
+    margin-bottom: 20px;
+}
+
+label {
+    margin-right: 10px;
+}
+
+input[type="number"], input[type="text"] {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-right: 10px;
+}
+
+button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+#start-button {
+    background-color: #28a745;
+    color: white;
+}
+
+#start-button:hover {
+    background-color: #218838;
+}
+
+#reset-button, #clear-settings {
+    background-color: #dc3545;
+    color: white;
+}
+
+#reset-button:hover, #clear-settings:hover {
+    background-color: #c82333;
+}
+
+#save-settings {
+    background-color: #007bff;
+    color: white;
+}
+
+#save-settings:hover {
+    background-color: #0056b3;
+}
+
+#toggle-view {
+    background-color: #6c757d;
+    color: white;
+    margin-top: 20px;
+}
+
+#toggle-view:hover {
+    background-color: #5a6268;
+}
+
+/* 顯示結果的列表樣式 */
+#result-display {
+    text-align: left;
+    margin-top: 20px;
+}
+
+#drawn-numbers {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+#drawn-numbers li {
+    background: #e9ecef;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
