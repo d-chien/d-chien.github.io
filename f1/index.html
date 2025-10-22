@@ -11,32 +11,18 @@
 </head>
 <body class="bg-gray-800">
     <nav class="bg-gray-900 text-white fixed w-full top-0 left-0 shadow-md">
-        <div class="relative flex items-center justify-center px-4 py-3">
-            <button id="menu-btn" class="absolute left-4 text-white focus:outline-none hover:text-red-500">
-                <!--漢堡選單-->
-                <!--命名SVG跟設定基礎大小數值-->
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hover:h-8 hover:w-8 transition-all duration-100" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <!-- 透過SVG畫出漢堡選單=>三條線 移動到(x=4,y=6)(從左上開始算)畫長度16的horizontal line 依此類推-->
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M4 6 h16 M4 12 h16 M4 18 h16" />
-                </svg>
-            </button>
-            
-            <div class="flex-1 text-center">
-                <h1 class="text-3xl font-bold hover:text-red-500 hover:text-5xl transition-all duration-800">F1</h1>
+        <a href="index.html">
+            <div class="relative flex items-center justify-center px-4 py-3">
+                <h1 class="text-3xl font-bold hover:text-red-500 transition-all duration-800">F1</h1>
             </div>
-        </div>
-
-        <div id="menu" class="hidden bg-gray-900">
-            <ul class="flex flex-col space-y-2 p-4">
-                <li class="hover:font-extrabold hover:text-xl hover:text-red-500 transition-all duration-300 cursor-pointer">首頁</li>
-                <li class="hover:font-extrabold hover:text-xl hover:text-red-500 transition-all duration-300 cursor-pointer">新聞</li>
-                <li class="hover:font-extrabold hover:text-xl hover:text-red-500 transition-all duration-300 cursor-pointer">車隊</li>
-                <li class="hover:font-extrabold hover:text-xl hover:text-red-500 transition-all duration-300 cursor-pointer">賽程</li>
-            </ul>
-        </div>
+        </a>
+        <ul class="flex space-x-6 justify-left mb-3 ml-4">
+            <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">即時賽事</a></li>
+            <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">賽事新聞</a></li>
+        </ul>
     </nav>
 
-    <main class="pt-20 p-4 text-center">
+    <main class="pt-36 p-4 text-center">
         <h1 class="text-2xl font-bold text-white mb-6">歡迎來到F1</h1>
         <p class="text-white mb-4">這裡將帶給你精彩的F1資訊</p>
         <a href="schedule.html" class="inline-block">
@@ -47,16 +33,6 @@
         </a>
     </main>
 
-
-    <!--漢堡選單-->
-    <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const menu = document.getElementById('menu');
-
-        menuBtn.addEventListener('click', () => {
-            menu.classList.toggle('hidden'); //切換hidden屬性
-        });
-    </script>
 
     <!--倒數計時-->
     <script>
