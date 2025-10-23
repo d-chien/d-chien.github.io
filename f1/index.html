@@ -6,25 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="author" content="d-chien">
     <title>F1 Racing</title>
-    <link rel="icon" href="" type="image/x-icon">
+    <!-- <link rel="icon" href="" type="image/x-icon"> -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 58'><circle cx='29' cy='29' r='25' style='fill:black'></circle><path  stroke='red' stroke-width='2.5' stroke-linecap='round' d='M21 8 A 23 23 0 0 0 21 50' /><path  stroke='red' stroke-width='2.5' stroke-linecap='round' d='M37 8 A 23 23 0 0 1 37 50' /><text x='29' y='29' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'>F1</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-800">
-    <nav class="bg-gray-900 text-white fixed w-full top-0 left-0 shadow-md">
-        <a href="index.html">
-            <div class="relative flex items-center justify-center px-4 py-3">
-                <h1 class="text-3xl font-bold hover:text-red-500 transition-all duration-800">F1</h1>
+    <header class="animate-slide-down-fade fixed inset-x-3 top-2 z-50 mx-auto flex max-w-7xl transform-gpu justify-center overflow-hidden rounded-xl border border-transparent px-3 py-3 transition-all duration-300 will-change-transform h-20 bg-white/0 dark:bg-gray-950/0">
+        <div class="w-full top-0 left-0 items-center justify-center">
+            <div class="relative flex items-center justify-between text-white">
+                <a href="index.html" class="flex items-center gap-2">
+                    <svg class="size-7 md:size-8" viewBox="0 0 58 58" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="29" cy="29" r="25" style="fill:black"></circle>
+                        <path  stroke="red" stroke-width="2.5" stroke-linecap="round" d="M21 8 A 23 23 0 0 0 21 50" />
+                        <path  stroke="red" stroke-width="2.5" stroke-linecap="round" d="M37 8 A 23 23 0 0 1 37 50" />
+                        <text x="29" y="29" font-family="Arial" font-size="20" fill="white" text-anchor="middle" dominant-baseline="middle">F1</text>
+                    </svg>
+                    <h1 class="text-3xl font-bold font-mono md:text-lg hover:text-red-500 transition-all duration-800">F1Flash</h1>
+                </a>
             </div>
-        </a>
-        <ul class="flex space-x-6 justify-left mb-3 ml-4">
-            <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">即時賽事</a></li>
-            <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">賽事新聞</a></li>
-        </ul>
-    </nav>
+            <!--引導列-->
+            <nav class="md:absolute md:top-1/2 md:left-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform duration-800">
+                <ul class="flex items-center gap-10 whitespace-nowrap font-mono">
+                    <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">即時賽事</a></li>
+                    <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">賽事新聞</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
 
     <main class="pt-36 p-4 text-center">
-        <h1 class="text-2xl font-bold text-white mb-6">歡迎來到F1</h1>
-        <p class="text-white mb-4">這裡將帶給你精彩的F1資訊</p>
+        <h1 class="text-5xl font-bold text-white mb-6">F1 一級方程式</h1>
+        <p class="hidden md:text-white md:mb-4 md:text-lg md:block">你想要的F1資訊這裡都有</p>
         <a href="schedule.html" class="inline-block">
             <div class="bg-gradient-to-b from-black to-red-600 shadow-lg shadow-white rounded-lg p-6 transform trasition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-gray-900 hover:bg-gradient-to-b hover:from-red-600 hover:to-black">
                 <h2 class="text-white text-xl font-semibold mb-4">距離下場賽事倒數</h2>
