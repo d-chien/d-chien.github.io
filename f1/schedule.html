@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="d-chien">
+    <title>F1 Racing - Schedule</title>
+    <!-- <link rel="icon" href="" type="image/x-icon"> -->
+    <link rel="icon" href="icon.svg">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-800">
+    <header class="animate-slide-down-fade fixed inset-x-3 top-2 z-50 mx-auto flex max-w-7xl transform-gpu justify-center overflow-hidden rounded-xl border border-transparent px-3 py-3 transition-all duration-300 will-change-transform h-20 bg-white/0 dark:bg-gray-950/0">
+        <div class="w-full top-0 left-0 items-center justify-center">
+            <div class="relative flex items-center justify-between text-white">
+                <a href="index.html" class="flex items-center gap-2">
+                    <img src="icon.svg" alt="F1Flash Logo" class="size-7 md:size-8">
+                    <h1 class="text-3xl font-bold font-mono md:text-lg hover:text-red-500 transition-all duration-800">F1Flash</h1>
+                </a>
+            </div>
+            <!--引導列-->
+            <nav class="md:absolute md:top-1/2 md:left-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform duration-800">
+                <ul class="flex items-center gap-10 whitespace-nowrap font-mono">
+                    <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">即時賽事</a></li>
+                    <li class="text-white font-bold hover:text-red-500 transition-all duration-300"><a href="">賽事新聞</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="pt-36 p-4 text-center">
+        <h1 class="text-5xl font-bold text-white mb-6">F1 一級方程式</h1>
+        <p class="hidden font-semibold md:text-white md:mb-4 md:text-lg md:block">2025剩餘賽程</p>
+        <div class="bg-gradient-to-b from-red-600 to-black shadow-lg shadow-gray-900 rounded-lg p-6 mb-4">
+            <h2 class="text-white text-xl font-semibold mb-4">距離下場賽事倒數</h2>
+            <div id="countdown" class="text-2xl font-bold text-gray-100 hover:text-white transition-colors duration-500">計算中</div>
+        </div>
+        
+        <!--後續賽事-->
+        <!-- <div id="raceContainer" class="flex flex-wrap item-center justify-center"></div> -->
+        <div id="raceContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
+    </main>
+
+
+    <!--倒數計時-->
+    <script>
+        data = {title: 'São Paulo Grand Prix', content:"2025-11-09 17:00:00"}
+        
+        // set next game time
+        data.title = data.title.replace(' Grand Prix', '大獎賽');
+        data.content += 'Z'
+        console.log('next race:');
+        console.log(data.title);
+        console.log(`utc time: ${data.content}`);
+        const utcDate = new Date(data.content).toLocaleString('zh-TW',{timeZoneName: 'short', hour12: false});
+        console.log(`local time: ${utcDate}`);
+        
+        const raceTime = new Date(data.content).getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = raceTime - now;
+
+            if (distance <= 0) {
+                document.getElementById('countdown').innerText = '比賽開始!';
+                clearInterval(timer);
+                return;
+            }
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+            const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+            const seconds = Math.floor((distance % (1000*60)) / (1000));
+
+            document.getElementById('countdown').innerText =
+                `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
+        }
+
+        const timer = setInterval(updateCountdown, 1000);
+        updateCountdown();
+    </script>
+
+    <!--接收剩餘賽事資訊-->
+    <script>
+        // simulate data received
+        const data = [
+            {title:'São Paulo Grand Prix', content:"2025-11-09 17:00:00"},
+            {title:'Las Vegas Grand Prix', content:"2025-11-23 04:00:00"},
+            {title:'Qatar Grand Prix', content:"2025-11-30 16:00:00"},
+            {title:'Abu Dhabi Grand Prix', content:"2025-12-07 13:00:00"},
+        ];
+
+        const container = document.getElementById('raceContainer');
+
+        data.forEach(
+            (item, index) => {
+                // transform data
+                raceName = item.title.replace(' Grand Prix','大獎賽');
+                raceTimeStr = item.content + 'Z';
+                console.log(`${index} - ${raceName} - ${raceTimeStr}`)
+                
+                // transform time
+                const dateObj = new Date(raceTimeStr);
+                const raceTime = dateObj.getTime(); // timestamp
+                const year = dateObj.getFullYear();
+                const month = dateObj.getMonth() + 1; // 取出的月份會是從0開始，所以要+1
+                const day = dateObj.getDate();
+                const hr = dateObj.getHours().toString().padStart(2,'0');
+                const mn = dateObj.getMinutes().toString().padStart(2,'0');
+                // const sec = dateObj.getSeconds();
+
+                const card = document.createElement('div');
+                card.className = 'bg-gradient-to-b from-red-600 to-black shadow-md shadow-gray-900 rounded-lg p-4 w-full';
+                card.id = `race-${index}`;
+                card.innerHTML = `
+                    <h3 class="text-lg text-white font-semibold mb-2">${raceName}</h3>
+                    <p class="text-gray-100">臺灣時間：${year}年${month}月${day}日 ${hr}:${mn}</p>
+                    <div id="racecountdown-${index}" class="text-gray-100">計算中</div>
+                `;
+                container.appendChild(card);
+            
+
+            //setup timer
+            const countdown = document.getElementById(`racecountdown-${index}`);
+            const updateRaceCountdown = () => {
+                const now = new Date().getTime();
+                const dist = raceTime - now;
+
+                if (dist <= 0) {
+                    countdown.textContent = '比賽開始!';
+                    clearInterval(interval);
+                    return;
+                }
+
+                const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
+                const minutes = Math.floor((dist % (1000*60*60)) / (1000*60));
+                const seconds = Math.floor((dist % (1000*60)) / (1000));
+
+                countdown.textContent = `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
+            };
+
+            updateRaceCountdown();
+            const interval = setInterval(updateRaceCountdown,1000);
+        });
+    </script>
+    
+</body>
+</html>
