@@ -7,7 +7,7 @@
     <meta name="author" content="d-chien">
     <title>F1 Racing</title>
     <!-- <link rel="icon" href="" type="image/x-icon"> -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 58 58'><circle cx='29' cy='29' r='25' style='fill:black'></circle><path  stroke='red' stroke-width='2.5' stroke-linecap='round' d='M21 8 A 23 23 0 0 0 21 50' /><path  stroke='red' stroke-width='2.5' stroke-linecap='round' d='M37 8 A 23 23 0 0 1 37 50' /><text x='29' y='29' font-size='20' fill='white' text-anchor='middle' dominant-baseline='middle'>F1</text></svg>">
+    <link rel="icon" href="icon.svg">
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-800">
@@ -33,7 +33,7 @@
         <h1 class="text-5xl font-bold text-white mb-6">F1 一級方程式</h1>
         <p class="hidden md:text-white md:mb-4 md:text-lg md:block">你想要的F1資訊這裡都有</p>
         <a href="schedule.html" class="inline-block">
-            <div class="bg-gradient-to-b from-black to-red-600 shadow-lg shadow-white rounded-lg p-6 transform trasition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-gray-900 hover:bg-gradient-to-b hover:from-red-600 hover:to-black">
+            <div class="bg-gradient-to-b from-black to-red-600 shadow-lg shadow-red-900 rounded-lg p-6 transform trasition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-gray-900 hover:bg-gradient-to-b hover:from-red-600 hover:to-black">
                 <h2 class="text-white text-xl font-semibold mb-4">距離下場賽事倒數</h2>
                 <div id="countdown" class="text-2xl font-bold text-gray-100 hover:text-white transition-colors duration-500">計算中</div>
             </div>
@@ -55,10 +55,10 @@
                 clearInterval(timer);
                 return;
             }
-
+            
             const days = Math.floor(distance / (1000 * 60 * 60 * 24));
             const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-            const minutes = Math.floor((distance % (100*60*60)) / (1000*60));
+            const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
             const seconds = Math.floor((distance % (1000*60)) / (1000));
 
             document.getElementById('countdown').innerText =
