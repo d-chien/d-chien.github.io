@@ -34,7 +34,7 @@
         <p class="hidden md:text-white md:mb-4 md:text-lg md:block">你想要的F1資訊這裡都有</p>
         <a href="schedule.html" class="inline-block">
             <div class="bg-gradient-to-b from-black to-red-600 shadow-lg shadow-red-900 rounded-lg p-6 transform trasition-all duration-500 hover:scale-105 hover:shadow-xl hover:shadow-gray-900 hover:bg-gradient-to-b hover:from-red-600 hover:to-black">
-                <h2 class="text-white text-xl font-semibold mb-4">距離下場賽事倒數</h2>
+                <h2 id="countdownHead" class="text-white text-xl font-semibold mb-4">距離下場賽事倒數</h2>
                 <div id="countdown" class="text-2xl font-bold text-gray-100 hover:text-white transition-colors duration-500">計算中</div>
             </div>
         </a>
@@ -44,29 +44,45 @@
     <!--倒數計時-->
     <script>
         // set next game time
-        const raceTime = new Date('2025-11-10T01:00:00').getTime();
+        const event_remaining_url = 'https://f1-web-backend-671397090169.asia-east1.run.app/events_remaining';
+        const countdown = document.getElementById('countdown');
 
-        function updateCountdown() {
-            const now = new Date().getTime();
-            const distance = raceTime - now;
+        fetch(event_remaining_url)
+            .then(response => response.json())
+            .then(data => {
+                const nextRace = data[0];
+                const raceName = nextRace.GP.replace(' Grand Prix', '大獎賽');
+                const raceTime = new Date(nextRace.RaceTimeUtc).getTime();
 
-            if (distance <= 0) {
-                document.getElementById('countdown').innerText = '比賽開始!';
-                clearInterval(timer);
-                return;
-            }
-            
-            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
-            const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
-            const seconds = Math.floor((distance % (1000*60)) / (1000));
+                function updateCountdown() {
+                    const now = new Date().getTime();
+                    const distance = raceTime - now;
 
-            document.getElementById('countdown').innerText =
-                `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
-        }
+                    if (distance <= 0) {
+                        document.getElementById('countdown').innerText = '比賽開始!';
+                        clearInterval(timer);
+                        return;
+                    }
+                    
+                    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((distance % (1000*60*60*24)) / (1000*60*60));
+                    const minutes = Math.floor((distance % (1000*60*60)) / (1000*60));
+                    const seconds = Math.floor((distance % (1000*60)) / (1000));
 
-        const timer = setInterval(updateCountdown, 1000);
-        updateCountdown();
+                    document.getElementById('countdown').innerText =
+                        `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
+                    document.getElementById('countdownHead').innerText = `距離 ${raceName} 倒數`;
+                }
+
+                const timer = setInterval(updateCountdown, 1000);
+                updateCountdown();
+
+
+            })
+            .catch(error => {
+                console.error('擷取錯誤: ',error);
+            })
+
     </script>
 </body>
 </html>
