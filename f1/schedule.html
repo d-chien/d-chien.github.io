@@ -96,6 +96,7 @@
         fetch(event_remaining_url)
             .then(response => response.json())
             .then(data => {
+                console.log(typeof data)
                 if (!Array.isArray(data)) throw new Error('資料非陣列');
                 
                 // transform
@@ -109,7 +110,7 @@
                 // display
                 processed.forEach(
                     (item, index) => {
-                        console.log(`${event.title} - 標準時間:${event.utcTime}`);
+                        console.log(`${item.title} - 標準時間:${item.utcTime}`);
                         const dateObj = new Date(item.utcTime);
                         const raceTime = dateObj.getTime(); // timestamp
                         const year = dateObj.getFullYear();
