@@ -92,81 +92,72 @@
         // ];
 
         const event_remaining_url = 'https://f1-web-backend-671397090169.asia-east1.run.app/events_remaining';
-        res = fetch(event_remaining_url)
-                .then(response => response.json())
-                .then(data => {
-                    // transform
-                    const processed = data.map(item =>{
-                        const title = item.GP.replace(' Grand Prix', '大獎賽');
-                        const utcTime = item.RaceTimeUtc + 'Z';
-                        
-                        return {title, utcTime};
-                    });
-
-                    // display
-                    processed.forEach(event => {
-                        console.log(`${event.title} - 標準時間:${event.utcTime}`);
-                    });
-
-                    return data;
-                })
-                .catch(error => {
-                    console.error('資料獲取失敗:', error);
-                })
-
         const container = document.getElementById('raceContainer');
-
-        res.forEach(
-            (item, index) => {
-                // transform data
-                // raceName = item.title.replace(' Grand Prix','大獎賽');
-                // raceTimeStr = item.content + 'Z';
-                // console.log(`${index} - ${raceName} - ${raceTimeStr}`)
+        fetch(event_remaining_url)
+            .then(response => response.json())
+            .then(data => {
+                if (!Array.isArray(data)) throw new Error('資料非陣列');
                 
-                // transform time
-                const dateObj = new Date(item.utcTime);
-                const raceTime = dateObj.getTime(); // timestamp
-                const year = dateObj.getFullYear();
-                const month = dateObj.getMonth() + 1; // 取出的月份會是從0開始，所以要+1
-                const day = dateObj.getDate();
-                const hr = dateObj.getHours().toString().padStart(2,'0');
-                const mn = dateObj.getMinutes().toString().padStart(2,'0');
-                // const sec = dateObj.getSeconds();
+                // transform
+                const processed = data.map(item =>{
+                    const title = item.GP.replace(' Grand Prix', '大獎賽');
+                    const utcTime = item.RaceTimeUtc + 'Z';
+                    
+                    return {title, utcTime};
+                });
 
-                const card = document.createElement('div');
-                card.className = 'bg-gradient-to-b from-red-600 to-black shadow-md shadow-gray-900 rounded-lg p-4 w-full';
-                card.id = `race-${index}`;
-                card.innerHTML = `
-                    <h3 class="text-lg text-white font-semibold mb-2">${item.title}</h3>
-                    <p class="text-gray-100">臺灣時間：${year}年${month}月${day}日 ${hr}:${mn}</p>
-                    <div id="racecountdown-${index}" class="text-gray-100">計算中</div>
-                `;
-                container.appendChild(card);
-            
+                // display
+                processed.forEach(
+                    (item, index) => {
+                        console.log(`${event.title} - 標準時間:${event.utcTime}`);
+                        const dateObj = new Date(item.utcTime);
+                        const raceTime = dateObj.getTime(); // timestamp
+                        const year = dateObj.getFullYear();
+                        const month = dateObj.getMonth() + 1; // 取出的月份會是從0開始，所以要+1
+                        const day = dateObj.getDate();
+                        const hr = dateObj.getHours().toString().padStart(2,'0');
+                        const mn = dateObj.getMinutes().toString().padStart(2,'0');
+                        // const sec = dateObj.getSeconds();
 
-            //setup timer
-            const countdown = document.getElementById(`racecountdown-${index}`);
-            const updateRaceCountdown = () => {
-                const now = new Date().getTime();
-                const dist = raceTime - now;
+                        const card = document.createElement('div');
+                        card.className = 'bg-gradient-to-b from-red-600 to-black shadow-md shadow-gray-900 rounded-lg p-4 w-full';
+                        card.id = `race-${index}`;
+                        card.innerHTML = `
+                            <h3 class="text-lg text-white font-semibold mb-2">${item.title}</h3>
+                            <p class="text-gray-100">臺灣時間：${year}年${month}月${day}日 ${hr}:${mn}</p>
+                            <div id="racecountdown-${index}" class="text-gray-100">計算中</div>
+                        `;
+                        container.appendChild(card);
 
-                if (dist <= 0) {
-                    countdown.textContent = '比賽開始!';
-                    clearInterval(interval);
-                    return;
-                }
+                        //setup timer
+                        const countdown = document.getElementById(`racecountdown-${index}`);
+                        const updateRaceCountdown = () => {
+                            const now = new Date().getTime();
+                            const dist = raceTime - now;
 
-                const days = Math.floor(dist / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
-                const minutes = Math.floor((dist % (1000*60*60)) / (1000*60));
-                const seconds = Math.floor((dist % (1000*60)) / (1000));
+                            if (dist <= 0) {
+                                countdown.textContent = '比賽開始!';
+                                clearInterval(interval);
+                                return;
+                            }
 
-                countdown.textContent = `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
-            };
+                            const days = Math.floor(dist / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((dist % (1000*60*60*24)) / (1000*60*60));
+                            const minutes = Math.floor((dist % (1000*60*60)) / (1000*60));
+                            const seconds = Math.floor((dist % (1000*60)) / (1000));
 
-            updateRaceCountdown();
-            const interval = setInterval(updateRaceCountdown,1000);
-        });
+                            countdown.textContent = `${days} 天 ${hours} 小時 ${minutes} 分鐘 ${seconds} 秒`;
+                        };
+
+                        updateRaceCountdown();
+                        const interval = setInterval(updateRaceCountdown,1000);
+                });
+
+                return processed;
+            })
+            .catch(error => {
+                console.error('資料獲取失敗:', error);
+            })
     </script>
     
 </body>
