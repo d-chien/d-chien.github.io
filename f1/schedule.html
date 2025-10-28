@@ -84,24 +84,47 @@
     <!--接收剩餘賽事資訊-->
     <script>
         // simulate data received
-        const data = [
-            {title:'São Paulo Grand Prix', content:"2025-11-09 17:00:00"},
-            {title:'Las Vegas Grand Prix', content:"2025-11-23 04:00:00"},
-            {title:'Qatar Grand Prix', content:"2025-11-30 16:00:00"},
-            {title:'Abu Dhabi Grand Prix', content:"2025-12-07 13:00:00"},
-        ];
+        // const data = [
+        //     {title:'São Paulo Grand Prix', content:"2025-11-09 17:00:00"},
+        //     {title:'Las Vegas Grand Prix', content:"2025-11-23 04:00:00"},
+        //     {title:'Qatar Grand Prix', content:"2025-11-30 16:00:00"},
+        //     {title:'Abu Dhabi Grand Prix', content:"2025-12-07 13:00:00"},
+        // ];
+
+        const event_remaining_url = 'https://f1-web-backend-671397090169.asia-east1.run.app/events_remaining';
+        res = fetch(event_remaining_url)
+                .then(response => response.json())
+                .then(data => {
+                    // transform
+                    const processed = data.map(item =>{
+                        const title = item.GP.replace(' Grand Prix', '大獎賽');
+                        const utcTime = item.RaceTimeUtc + 'Z';
+                        
+                        return {title, utcTime};
+                    });
+
+                    // display
+                    processed.forEach(event => {
+                        console.log(`${event.title} - 標準時間:${event.utcTime}`);
+                    });
+
+                    return data;
+                })
+                .catch(error => {
+                    console.error('資料獲取失敗:', error);
+                })
 
         const container = document.getElementById('raceContainer');
 
-        data.forEach(
+        res.forEach(
             (item, index) => {
                 // transform data
-                raceName = item.title.replace(' Grand Prix','大獎賽');
-                raceTimeStr = item.content + 'Z';
-                console.log(`${index} - ${raceName} - ${raceTimeStr}`)
+                // raceName = item.title.replace(' Grand Prix','大獎賽');
+                // raceTimeStr = item.content + 'Z';
+                // console.log(`${index} - ${raceName} - ${raceTimeStr}`)
                 
                 // transform time
-                const dateObj = new Date(raceTimeStr);
+                const dateObj = new Date(item.utcTime);
                 const raceTime = dateObj.getTime(); // timestamp
                 const year = dateObj.getFullYear();
                 const month = dateObj.getMonth() + 1; // 取出的月份會是從0開始，所以要+1
@@ -114,7 +137,7 @@
                 card.className = 'bg-gradient-to-b from-red-600 to-black shadow-md shadow-gray-900 rounded-lg p-4 w-full';
                 card.id = `race-${index}`;
                 card.innerHTML = `
-                    <h3 class="text-lg text-white font-semibold mb-2">${raceName}</h3>
+                    <h3 class="text-lg text-white font-semibold mb-2">${item.title}</h3>
                     <p class="text-gray-100">臺灣時間：${year}年${month}月${day}日 ${hr}:${mn}</p>
                     <div id="racecountdown-${index}" class="text-gray-100">計算中</div>
                 `;
