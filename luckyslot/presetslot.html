@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>輪次拉霸遊戲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>拉霸遊戲</h1>
+        <p id="current-round-name">準備中...</p>
+    </header>
+
+    <main>
+        <section id="main-page">
+            <div class="game-layout">
+                <div class="game-left">
+                    <div id="slot-container">
+                        <div class="slot-wheel" id="wheel-1">0</div>
+                        <div class="slot-wheel" id="wheel-2">0</div>
+                        <div class="slot-wheel" id="wheel-3">0</div>
+                    </div>
+
+                    <div class="controls">
+                        <!-- 抽取數量由輪次決定，不讓使用者輸入，顯示目前輪次資訊 -->
+                        <div class="current-round-info" id="round-status">
+                            目前無設定輪次
+                        </div>
+                        <button id="start-button">開始本輪抽獎</button>
+                        <div style="margin-top: 10px;">
+                            <button id="reset-round-button">重置本輪</button>
+                            <button id="reset-all-button">全部重置</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="result-display">
+                    <h3>抽獎結果：</h3>
+                    <div id="round-results-container">
+                        <!-- 結果會動態插入這裡 -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-page" style="display: none;">
+            <h2>後台設定</h2>
+
+            <div class="settings-controls">
+                <h3>1. 數字範圍設定</h3>
+                <label for="range-start">從</label>
+                <input type="number" id="range-start" value="1" min="0" max="999">
+                <label for="range-end">到</label>
+                <input type="number" id="range-end" value="999" min="0" max="999">
+            </div>
+
+            <div class="settings-controls">
+                <label for="exclude-numbers">排除號碼 (以逗號分隔)：</label>
+                <input type="text" id="exclude-numbers" placeholder="例: 1, 12, 123">
+            </div>
+
+            <hr>
+
+            <div class="settings-controls">
+                <h3>2. 輪次設定</h3>
+                <div id="rounds-config-list">
+                    <!-- 動態增加輪次設定輸入框 -->
+                </div>
+                <button id="add-round-btn">+ 新增輪次</button>
+            </div>
+
+            <div class="settings-buttons">
+                <button id="save-settings">儲存設定</button>
+                <button id="clear-settings">清除設定</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <button id="toggle-view">切換至後台</button>
+        <a href="index.html"><button id="back-home">回首頁</button></a>
+    </footer>
+
+    <script src="presetslot.js"></script>
+
+</body>
+
+</html>

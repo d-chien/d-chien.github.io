@@ -29,7 +29,9 @@ main {
     width: 90%;
     max-width: 600px;
     margin: auto; /* 讓 main 區塊在水平方向上置中 */
+    transition: max-width 0.3s ease; /* Smooth transition for width change */
 }
+
 
 /* 底部切換按鈕的樣式 */
 footer {
@@ -100,31 +102,32 @@ button {
     background-color: #218838;
 }
 
-#reset-button, #clear-settings {
+#reset-button, #clear-settings, #reset-round-button, #reset-all-button {
     background-color: #dc3545;
     color: white;
+    margin-left: 5px; 
 }
 
-#reset-button:hover, #clear-settings:hover {
+#reset-button:hover, #clear-settings:hover, #reset-round-button:hover, #reset-all-button:hover {
     background-color: #c82333;
 }
 
-#save-settings {
+#save-settings, #add-round-btn {
     background-color: #007bff;
     color: white;
 }
 
-#save-settings:hover {
+#save-settings:hover, #add-round-btn:hover {
     background-color: #0056b3;
 }
 
-#toggle-view {
+#toggle-view, #back-home {
     background-color: #6c757d;
     color: white;
     margin-top: 20px;
 }
 
-#toggle-view:hover {
+#toggle-view:hover, #back-home:hover {
     background-color: #5a6268;
 }
 
@@ -132,6 +135,7 @@ button {
 #result-display {
     text-align: left;
     margin-top: 20px;
+    width: 100%;
 }
 
 #drawn-numbers {
@@ -147,4 +151,72 @@ button {
     background: #e9ecef;
     padding: 5px 10px;
     border-radius: 5px;
+}
+
+/* Responsive Layout Logic */
+.game-layout {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.game-left {
+    width: 100%;
+}
+
+/* Preset Slot Specifics */
+.round-control-group {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.round-list-item {
+    display: flex;
+    justify-content: space-between;
+    background: #f9f9f9;
+    padding: 8px;
+    margin-bottom: 5px;
+    border: 1px solid #eee;
+}
+
+.current-round-info {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #e83e8c;
+    margin-bottom: 15px;
+}
+
+@media (min-width: 800px) {
+    main {
+        max-width: 1000px; /* Expand max-width for side-by-side view */
+    }
+
+    .game-layout {
+        flex-direction: row;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .game-left {
+        flex: 1;
+        /* Ensure it doesn't get too small */
+        min-width: 0; 
+    }
+
+    #result-display {
+        /* "擺在右邊，並且寬度最大不超過父元素的45%" */
+        width: 45%; 
+        max-width: 45%;
+        margin-top: 0;
+        border-left: 1px solid #eee;
+        padding-left: 20px;
+    }
 }

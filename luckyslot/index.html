@@ -1,66 +1,53 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>拉霸遊戲</title>
+    <title>拉霸遊戲選擇</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 50px;
+        }
+
+        .menu-buttons a {
+            text-decoration: none;
+        }
+
+        .menu-buttons button {
+            width: 100%;
+            padding: 20px;
+            font-size: 24px;
+        }
+    </style>
 </head>
+
 <body>
 
     <header>
-        <h1>拉霸遊戲</h1>
-        <p>一個簡單的數字抽取機</p>
+        <h1>拉霸遊戲大廳</h1>
+        <p>請選擇您要進行的遊戲模式</p>
     </header>
 
     <main>
-        <section id="main-page">
-            <div id="slot-container">
-                <div class="slot-wheel" id="wheel-1">0</div>
-                <div class="slot-wheel" id="wheel-2">0</div>
-                <div class="slot-wheel" id="wheel-3">0</div>
-            </div>
-
-            <div class="controls">
-                <label for="draw-count-input">抽取數量：</label>
-                <input type="number" id="draw-count-input" value="1" min="1" max="100">
-                <button id="start-button">開始拉霸</button>
-                <button id="reset-button">重置</button>
-            </div>
-
-            <div id="result-display">
-                <p>已抽取的號碼：</p>
-                <ul id="drawn-numbers"></ul>
-            </div>
-        </section>
-
-        <section id="settings-page" style="display: none;">
-            <h2>後台設定</h2>
-            <div class="settings-controls">
-                <p>可抽取的數字範圍：</p>
-                <label for="range-start">從</label>
-                <input type="number" id="range-start" value="1" min="0" max="999">
-                <label for="range-end">到</label>
-                <input type="number" id="range-end" value="999" min="0" max="999">
-            </div>
-
-            <div class="settings-controls">
-                <label for="exclude-numbers">排除號碼 (以逗號分隔)：</label>
-                <input type="text" id="exclude-numbers" placeholder="例: 1, 12, 123">
-            </div>
-
-            <div class="settings-buttons">
-                <button id="save-settings">儲存</button>
-                <button id="clear-settings">清除</button>
-            </div>
-        </section>
+        <div class="menu-buttons">
+            <a href="singleslot.html">
+                <button>一般拉霸 (Single Slot)</button>
+            </a>
+            <a href="presetslot.html">
+                <button>輪次拉霸 (Preset Slot)</button>
+            </a>
+        </div>
     </main>
 
     <footer>
-        <button id="toggle-view">切換至後台</button>
+        <p>&copy; 2024 Lucky Slot</p>
     </footer>
 
-    <script src="script.js"></script>
-
 </body>
+
 </html>
