@@ -29,6 +29,7 @@ footer {
 header h1,
 header p {
     margin: 0;
+    color: #f6f1f1;
 }
 
 main {
@@ -53,7 +54,7 @@ footer {
 /* 標題與段落樣式 */
 h1,
 h2 {
-    color: #b3000c;
+    color: #f6f1f1;
 }
 
 /* 拉霸機樣式 */
@@ -112,19 +113,19 @@ button {
 }
 
 #start-button {
-    background-color: #28a745;
+    background-color: #3128a7;
     color: white;
 }
 
 #start-button:hover {
-    background-color: #218838;
+    background-color: #3128a7b3;
 }
 
 #reset-button,
 #clear-settings,
 #reset-round-button,
 #reset-all-button {
-    background-color: #dc3545;
+    background-color: #eb6270;
     color: white;
     margin-left: 5px;
 }
