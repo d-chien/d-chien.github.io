@@ -122,6 +122,10 @@ function updateMetaUI() {
         roundStatusEl.textContent = "所有獎項皆已抽出";
         startButton.disabled = true;
         startButton.textContent = "已完成";
+
+        // 確保重置按鈕狀態 logical
+        resetRoundButton.disabled = true;
+        resetAllButton.disabled = false;
         return;
     }
 
@@ -132,30 +136,15 @@ function updateMetaUI() {
     const currentResults = roundResults[currentRoundIndex] || [];
     const isRoundComplete = currentResults.length >= currentRound.count;
 
-    if (isRoundComplete) {
-        // 該輪已完成，準備進入下一輪
-        // 如果還有下一輪，按鈕變成「進入下一輪」? 
-        // 依照需求：「再次點擊就進行下一個輪次的抽獎」
-        // 但這裡我們設計成：如果是 'Start' 按鈕，點擊就直接開始下一輪的抽獎動畫 (如果下一輪要抽的話)
-        // 或是我們自動推進 Index? 
-
-        // 邏輯調整：
-        // 當下按下按鈕 -> 執行該輪次抽獎。 
-        // 如果該輪次需要抽 5 個，現在只抽了 0 個，點按鈕 -> 抽 5 個。
-        // 抽完後，該輪次結束。
-        // 下一次再按 -> 執行下一輪次。
-
-        // 所以如果 currentRoundIndex 指向的是一個「已完成」的輪次，我們應該要自動推進到下一個「未完成」的輪次嗎？
-        // 這裡採取簡單作法：每次抽獎動作結束後，自動將 index + 1。
-        // 所以理論上 updateMetaUI 呼叫時，currentRoundIndex 應該總是指向「準備要進行」的那一輪。
-
-        // 但如果剛初始化，或者上一輪剛結束，我們會在這個函式被呼叫前把 index+1 存起來嗎？
-        // 讓我們在 startRaffle 結束後處理 index 推進。
-    }
-
     roundStatusEl.textContent = `本輪獎項：${currentRound.name} (抽取 ${currentRound.count} 位)`;
     startButton.textContent = "開始抽獎";
     startButton.disabled = false;
+
+    // 如果當前輪次大於 0 (即有上一輪)，或者是已經執行過 (但 index 沒推進因為邏輯?)
+    // 這裡我們只判斷是否可重置：只要剛抽完一輪 (index 會+1)，所以 index > 0 就可以重置上一輪。
+    // 如果 index == 0，代表第一輪還沒開始，不能重置。
+    resetRoundButton.disabled = (currentRoundIndex === 0);
+    resetAllButton.disabled = false;
 }
 
 function updateResultsUI() {
@@ -225,23 +214,32 @@ function addRoundConfigRow(name = '', count = 1, index = null) {
         <input type="text" class="round-name" value="${name}" placeholder="獎項名稱">
         <label>數量：</label>
         <input type="number" class="round-count" value="${count}" min="1" style="width: 60px;">
-        <button class="remove-round-btn" style="background-color: #dc3545; padding: 5px 10px;">刪除</button>
+        <button type="button" class="remove-round-btn" style="background-color: #dc3545; padding: 5px 10px;">刪除</button>
     `;
 
     // 刪除按鈕功能
     const removeBtn = div.querySelector('.remove-round-btn');
-    removeBtn.addEventListener('click', () => {
+    removeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
         div.remove();
     });
 
     roundsConfigList.appendChild(div);
 }
 
-addRoundBtn.addEventListener('click', () => {
+addRoundBtn.addEventListener('click', (e) => {
+    e.preventDefault();
     addRoundConfigRow('新輪次', 1);
 });
 
-saveSettingsButton.addEventListener('click', () => {
+saveSettingsButton.addEventListener('click', (e) => {
+    e.preventDefault();
+
+    // Double Check
+    if (!confirm('儲存設定會重置目前的抽獎進度，確定嗎？')) {
+        return;
+    }
+
     const start = parseInt(rangeStartInput.value);
     const end = parseInt(rangeEndInput.value);
 
@@ -268,22 +266,27 @@ saveSettingsButton.addEventListener('click', () => {
 
     sessionStorage.setItem('presetRaffleSettings', JSON.stringify(appSettings));
 
-    // 重置遊戲狀態，因為設定變了可能會衝突
-    if (confirm('儲存設定會重置目前的抽獎進度，確定嗎？')) {
-        currentRoundIndex = 0;
-        roundResults = {};
-        takenNumbers = [];
-        saveGameState();
+    // 重置遊戲狀態
+    currentRoundIndex = 0;
+    roundResults = {};
+    takenNumbers = [];
+    saveGameState();
 
-        alert('設定已儲存！');
-        initializeApp();
-
-        // 切回主頁
+    // 先切換視圖，再更新 UI
+    if (mainPage.style.display === 'none') {
         toggleViewButton.click();
     }
+
+    initializeApp(); // 這裡會呼叫 updateMetaUI，確保標題顯示新設定的第一輪名稱
+
+    // 最後再 Alert，確保 UI 已經就緒
+    setTimeout(() => {
+        alert('設定已儲存！');
+    }, 50);
 });
 
-clearSettingsButton.addEventListener('click', () => {
+clearSettingsButton.addEventListener('click', (e) => {
+    e.preventDefault();
     if (confirm('確定清除所有設定與進度？')) {
         sessionStorage.removeItem('presetRaffleSettings');
         sessionStorage.removeItem('presetRaffleState');
@@ -324,7 +327,9 @@ function spinWheel(wheelElement, finalNumber, duration) {
 }
 
 // 開始本輪抽獎
-startButton.addEventListener('click', async () => {
+startButton.addEventListener('click', async (e) => {
+    e.preventDefault();
+
     // 再次確認狀態
     if (currentRoundIndex >= appSettings.rounds.length) return;
 
@@ -351,12 +356,7 @@ startButton.addEventListener('click', async () => {
         }
     }
 
-    // 執行動畫 (只顯示最後一個號碼的動畫，或者每個號碼都跑一次？)
-    // 需求：「前端提供之抽獎按鈕每次按下的時候進行一個輪次的抽獎」
-    // 通常這意味著一次啪啪啪把這輪都抽出來。
-    // 為了效果，我們還是做最後一個號碼的動畫展示，或是簡單做個過場。
-    // 這裡沿用 singleslot 邏輯：最後一個號碼做 Slot 動畫。
-
+    // 執行動畫 - 顯示最後一個號碼
     const lastNum = thisDrawResults[thisDrawResults.length - 1];
     const numStr = lastNum.toString().padStart(3, '0');
     const digits = numStr.split('').map(Number);
@@ -379,17 +379,6 @@ startButton.addEventListener('click', async () => {
     saveGameState();
     updateResultsUI();
     updateMetaUI();
-
-    // 解鎖
-    // 注意: updateMetaUI 裡可能已經把 startButton disable 了 (如果結束了)
-    if (currentRoundIndex < appSettings.rounds.length) {
-        resetRoundButton.disabled = false;
-        resetAllButton.disabled = false;
-    } else {
-        // 全劇終，給 reset 機會
-        resetRoundButton.disabled = true; // 沒輪次可重置了
-        resetAllButton.disabled = false;
-    }
 });
 
 
@@ -398,16 +387,8 @@ startButton.addEventListener('click', async () => {
 // ==========================================================
 
 // 重置本輪 (退回上一輪狀態)
-resetRoundButton.addEventListener('click', () => {
-    // 邏輯思考：重置「該輪次」。如果是剛抽完 Round 1，User 想重來 Round 1。
-    // 此時 currentRoundIndex 已經是 2 (準備 Round 2)。
-    // 所以我們要退回 currentRoundIndex - 1，並把那輪的號碼吐回 availableNumbers，清除 results。
-
-    // 如果 currentRoundIndex 是 0，代表還沒開始，無法重置。
-    // 但是，如果使用者是在「准备抽 Round 2」的时候按下「重置本轮」，
-    // 他的意图是「重置 Round 2 (还没抽)」还是「重置上一次抽的 Round 1」？
-    // 依照直觀操作：「重置該輪次抽獎」通常指重置「剛剛發生的那個結果」。
-    // 所以我們查看是否有「上一個已完成的輪次」。
+resetRoundButton.addEventListener('click', (e) => {
+    e.preventDefault();
 
     if (currentRoundIndex === 0) {
         alert("尚無抽獎紀錄可重置。");
@@ -436,15 +417,21 @@ resetRoundButton.addEventListener('click', () => {
     saveGameState();
     rebuildAvailableNumbers();
 
+    // 4. 清除視覺上的號碼 (避免誤會)
+    slotWheels.forEach(w => w.textContent = '0');
+
     updateMetaUI();
     updateResultsUI();
 
-    alert(`已重置 ${targetRoundName}。`);
+    setTimeout(() => {
+        alert(`已重置 ${targetRoundName}。`);
+    }, 50);
 });
 
 
 // 全部重置
-resetAllButton.addEventListener('click', () => {
+resetAllButton.addEventListener('click', (e) => {
+    e.preventDefault();
     if (!confirm("確定要重置所有輪次的抽獎結果嗎？一切將從頭開始。")) return;
 
     currentRoundIndex = 0;
@@ -454,11 +441,15 @@ resetAllButton.addEventListener('click', () => {
     saveGameState();
     rebuildAvailableNumbers();
 
+    // Slot 歸零
+    slotWheels.forEach(w => w.textContent = '0');
+
     updateMetaUI();
     updateResultsUI();
 
-    // Slot 歸零
-    slotWheels.forEach(w => w.textContent = '0');
+    setTimeout(() => {
+        alert("所有輪次已重置。");
+    }, 50);
 });
 
 
@@ -466,7 +457,13 @@ resetAllButton.addEventListener('click', () => {
 // 7. 頁面初始化與切換
 // ==========================================================
 
-toggleViewButton.addEventListener('click', () => {
+toggleViewButton.addEventListener('click', (e) => {
+    // 這裡通常不需要 preventDefault 因為它不是 submit，但加了保險
+    // e.preventDefault(); // 但如果我是手動 .click() 觸發的，可能傳不進來e?
+    // 當手動呼叫 toggleViewButton.click() 時，e 會是 undefined 或者合成事件?
+    // 為了安全，檢查 e 是否存在
+    if (e && e.preventDefault) e.preventDefault();
+
     if (mainPage.style.display === 'none') {
         mainPage.style.display = 'block';
         settingsPage.style.display = 'none';

@@ -64,7 +64,7 @@ function initializeApp() {
         rangeEnd: 999,
         excludeNumbers: []
     };
-    
+
     // 如果有，就使用已儲存的設定
     if (savedSettings) {
         settings = JSON.parse(savedSettings);
@@ -172,17 +172,17 @@ async function startRaffle() {
         alert('請輸入有效的抽獎數量。');
         return;
     }
-    
+
     // 檢查號碼池是否足夠
     if (drawCount > availableNumbers.length) {
         alert(`可抽取號碼不足！目前剩下 ${availableNumbers.length} 個號碼。`);
         return;
     }
-    
+
     // 鎖定按鈕，避免在動畫進行中重複點擊
     startButton.disabled = true;
     resetButton.disabled = true;
-    
+
     // 依據抽獎數量執行抽取
     for (let i = 0; i < drawCount; i++) {
         const number = drawSingleNumber();
@@ -195,10 +195,10 @@ async function startRaffle() {
     const lastDrawnNumber = drawnNumbers[drawnNumbers.length - 1];
     const numStr = lastDrawnNumber.toString().padStart(3, '0');
     const digits = numStr.split('').map(Number);
-    
+
     // 讓三個數字輪依序開始滾動並停止在最終號碼上
     const spinDuration = 1000; // 動畫持續時間 (1秒)
-    
+
     // 開轉前清空
     for (let i = 0; i < 3; i++) {
         slotWheels[i].textContent = ''
@@ -221,26 +221,33 @@ async function startRaffle() {
 }
 
 // 開始按鈕的事件監聽器
-startButton.addEventListener('click', startRaffle);
+startButton.addEventListener('click', (e) => {
+    e.preventDefault();
+    startRaffle();
+});
 
 // ==========================================================
 // 8. 重置功能
 // ==========================================================
-resetButton.addEventListener('click', () => {
+resetButton.addEventListener('click', (e) => {
+    e.preventDefault();
     // 顯示警示框確認是否重置
     const confirmReset = window.confirm('確定要重置嗎？所有已抽取的號碼都會被清除。');
-    
+
     // 如果使用者按下確定
     if (confirmReset) {
         // 清空已抽取的號碼清單
         drawnNumbers = [];
-        
+
         // 重新初始化應用程式，重建可抽取的號碼清單
         initializeApp();
-        
+
         // 更新畫面顯示
         updateDrawnNumbersDisplay();
-        
+
+        // 視覺歸零
+        slotWheels.forEach(w => w.textContent = '0');
+
         alert('已重置！現在可以重新抽取號碼。');
     }
 });
@@ -254,11 +261,11 @@ function spinWheel(wheelElement, finalNumber, duration) {
     const startTime = Date.now();
     const interval = 50; // 每 50 毫秒更新一次數字
     let counter = 0;
-    
+
     // 定時器，每隔一段時間更新數字
     const timer = setInterval(() => {
         const elapsedTime = Date.now() - startTime;
-        
+
         // 如果時間到了或已達最大圈數，則停止動畫
         if (elapsedTime >= duration) {
             clearInterval(timer); // 停止定時器
@@ -270,6 +277,6 @@ function spinWheel(wheelElement, finalNumber, duration) {
         // 隨機顯示一個數字來模擬滾動效果
         const randomNumber = Math.floor(Math.random() * 10);
         wheelElement.textContent = randomNumber;
-        
+
     }, interval);
 }
