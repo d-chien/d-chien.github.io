@@ -12,12 +12,15 @@ body {
     text-align: center;
 }
 
-header, footer {
+header,
+footer {
     padding: 20px 0;
-    width: 100%; /* 讓 header 和 footer 佔滿整個寬度 */
+    width: 100%;
+    /* 讓 header 和 footer 佔滿整個寬度 */
 }
 
-header h1, header p {
+header h1,
+header p {
     margin: 0;
 }
 
@@ -28,8 +31,10 @@ main {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 600px;
-    margin: auto; /* 讓 main 區塊在水平方向上置中 */
-    transition: max-width 0.3s ease; /* Smooth transition for width change */
+    margin: auto;
+    /* 讓 main 區塊在水平方向上置中 */
+    transition: max-width 0.3s ease;
+    /* Smooth transition for width change */
 }
 
 
@@ -39,15 +44,17 @@ footer {
 }
 
 /* 標題與段落樣式 */
-h1, h2 {
-    color: #0056b3;
+h1,
+h2 {
+    color: #b3000c;
 }
 
 /* 拉霸機樣式 */
 #slot-container {
     display: flex;
     justify-content: center;
-    gap: 15px; /* 數字輪之間的間距 */
+    gap: 15px;
+    /* 數字輪之間的間距 */
     margin-bottom: 20px;
 }
 
@@ -56,7 +63,8 @@ h1, h2 {
     height: 140px;
     border: 3px solid #0056b3;
     border-radius: 10px;
-    overflow: hidden; /* 隱藏數字輪滾動時超出邊界的部分 */
+    overflow: hidden;
+    /* 隱藏數字輪滾動時超出邊界的部分 */
     background-color: #e6f2ff;
     position: relative;
     font-size: 80px;
@@ -64,11 +72,13 @@ h1, h2 {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease-out; /* 增加過渡效果，讓數字變換更流暢 */
+    transition: transform 0.2s ease-out;
+    /* 增加過渡效果，讓數字變換更流暢 */
 }
 
 /* 按鈕與輸入框樣式 */
-.controls, .settings-controls {
+.controls,
+.settings-controls {
     margin-bottom: 20px;
 }
 
@@ -76,7 +86,8 @@ label {
     margin-right: 10px;
 }
 
-input[type="number"], input[type="text"] {
+input[type="number"],
+input[type="text"] {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -102,32 +113,42 @@ button {
     background-color: #218838;
 }
 
-#reset-button, #clear-settings, #reset-round-button, #reset-all-button {
+#reset-button,
+#clear-settings,
+#reset-round-button,
+#reset-all-button {
     background-color: #dc3545;
     color: white;
-    margin-left: 5px; 
+    margin-left: 5px;
 }
 
-#reset-button:hover, #clear-settings:hover, #reset-round-button:hover, #reset-all-button:hover {
+#reset-button:hover,
+#clear-settings:hover,
+#reset-round-button:hover,
+#reset-all-button:hover {
     background-color: #c82333;
 }
 
-#save-settings, #add-round-btn {
+#save-settings,
+#add-round-btn {
     background-color: #007bff;
     color: white;
 }
 
-#save-settings:hover, #add-round-btn:hover {
+#save-settings:hover,
+#add-round-btn:hover {
     background-color: #0056b3;
 }
 
-#toggle-view, #back-home {
+#toggle-view,
+#back-home {
     background-color: #6c757d;
     color: white;
     margin-top: 20px;
 }
 
-#toggle-view:hover, #back-home:hover {
+#toggle-view:hover,
+#back-home:hover {
     background-color: #5a6268;
 }
 
@@ -195,7 +216,8 @@ button {
 
 @media (min-width: 800px) {
     main {
-        max-width: 1000px; /* Expand max-width for side-by-side view */
+        max-width: 1000px;
+        /* Expand max-width for side-by-side view */
     }
 
     .game-layout {
@@ -208,12 +230,12 @@ button {
     .game-left {
         flex: 1;
         /* Ensure it doesn't get too small */
-        min-width: 0; 
+        min-width: 0;
     }
 
     #result-display {
         /* "擺在右邊，並且寬度最大不超過父元素的45%" */
-        width: 45%; 
+        width: 45%;
         max-width: 45%;
         margin-top: 0;
         border-left: 1px solid #eee;

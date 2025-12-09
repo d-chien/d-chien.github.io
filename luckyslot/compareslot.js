@@ -44,6 +44,7 @@ let totalPlayers = 0;
 let currentPlayer = 1;
 let playerResults = []; // [{ player: 1, number: 123 }, ...]
 let isGameActive = false;
+let currentWinCondition = 'big'; // 'big' or 'small'
 
 // Settings
 let settings = {
@@ -142,6 +143,16 @@ initGameBtn.addEventListener('click', () => {
         return;
     }
 
+    // Get Win Condition
+    const conditionRadios = document.getElementsByName('win-condition');
+    currentWinCondition = 'big'; // default
+    for (const radio of conditionRadios) {
+        if (radio.checked) {
+            currentWinCondition = radio.value;
+            break;
+        }
+    }
+
     // Init State
     totalPlayers = count;
     currentPlayer = 1;
@@ -151,7 +162,10 @@ initGameBtn.addEventListener('click', () => {
     // Update UI
     setupPanel.style.display = 'none';
     playPanel.style.display = 'block';
-    gameStatus.textContent = `遊戲進行中 (共 ${totalPlayers} 人)`;
+
+    const modeText = currentWinCondition === 'big' ? "比大 (最大者勝)" : "比小 (最小者勝)";
+    gameStatus.textContent = `遊戲進行中 - 共 ${totalPlayers} 人 [${modeText}]`;
+
     updateGameUI();
 
     // Clear previous results
@@ -238,20 +252,27 @@ function addResultToList(playerIdx, number) {
 }
 
 function showFinalResult() {
-    // Find max
-    // Sort logic: descending
-    const sorted = [...playerResults].sort((a, b) => b.number - a.number);
+    // Determine sort based on condition
+    const sorted = [...playerResults].sort((a, b) => {
+        if (currentWinCondition === 'small') {
+            return a.number - b.number; // Ascending for Small
+        }
+        return b.number - a.number; // Descending for Big
+    });
+
     const winner = sorted[0];
 
     // Handle Ties (Multiple winners)
     const winners = sorted.filter(p => p.number === winner.number);
 
     let text = "";
+    const conditionText = currentWinCondition === 'big' ? "最大" : "最小";
+
     if (winners.length === 1) {
-        text = `🏆 獲勝者：第 ${winner.player} 位 (號碼 ${winner.number})`;
+        text = `🏆 獲勝者 (${conditionText})：第 ${winner.player} 位 (號碼 ${winner.number})`;
     } else {
         const winnerNames = winners.map(w => `第 ${w.player} 位`).join(' & ');
-        text = `🏆 平手：${winnerNames} (號碼 ${winner.number})`;
+        text = `🏆 平手 (${conditionText})：${winnerNames} (號碼 ${winner.number})`;
     }
 
     finalVerdict.textContent = text;
