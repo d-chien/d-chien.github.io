@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>比大小拉霸遊戲</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>拉霸比大小</h1>
+        <p id="game-status">設定人數並開始</p>
+    </header>
+
+    <main>
+        <section id="main-page">
+            <div class="game-layout">
+                <div class="game-left">
+                    <div id="slot-container">
+                        <div class="slot-wheel" id="wheel-1">0</div>
+                        <div class="slot-wheel" id="wheel-2">0</div>
+                        <div class="slot-wheel" id="wheel-3">0</div>
+                    </div>
+
+                    <div class="controls">
+                        <div id="setup-panel">
+                            <label for="player-count">參與人數：</label>
+                            <input type="number" id="player-count" value="2" min="2" max="20" style="width: 60px;">
+                            <button id="init-game-btn">設定並開始</button>
+                        </div>
+
+                        <div id="play-panel" style="display: none; margin-top: 15px;">
+                            <div class="current-round-info" id="current-player-info">
+                                請 第 1 位 玩家抽獎
+                            </div>
+                            <button id="draw-btn">抽號碼</button>
+                            <button id="reset-game-btn" style="background-color: #dc3545;">重置遊戲</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="result-display">
+                    <h3>比大小結果：</h3>
+                    <ul id="drawn-numbers"></ul>
+                    <div id="final-verdict" style="margin-top: 20px; font-weight: bold; color: #d63384;"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-page" style="display: none;">
+            <h2>後台設定</h2>
+            <div class="settings-controls">
+                <p>可抽取的數字範圍：</p>
+                <label for="range-start">從</label>
+                <input type="number" id="range-start" value="1" min="0" max="999">
+                <label for="range-end">到</label>
+                <input type="number" id="range-end" value="999" min="0" max="999">
+            </div>
+
+            <div class="settings-controls">
+                <label for="exclude-numbers">排除號碼 (以逗號分隔)：</label>
+                <input type="text" id="exclude-numbers" placeholder="例: 1, 12, 123">
+            </div>
+
+            <div class="settings-buttons">
+                <button id="save-settings">儲存</button>
+                <button id="clear-settings">清除</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <button id="toggle-view">切換至後台</button>
+        <a href="index.html"><button id="back-home">回首頁</button></a>
+    </footer>
+
+    <script src="compareslot.js"></script>
+
+</body>
+
+</html>

@@ -18,6 +18,7 @@ const slotWheels = [
 const startButton = document.getElementById('start-button');
 const resetRoundButton = document.getElementById('reset-round-button');
 const resetAllButton = document.getElementById('reset-all-button');
+const goCompareBtn = document.getElementById('go-compare-btn');
 
 // 後台頁面元素
 const rangeStartInput = document.getElementById('range-start');
@@ -126,8 +127,15 @@ function updateMetaUI() {
         // 確保重置按鈕狀態 logical
         resetRoundButton.disabled = true;
         resetAllButton.disabled = false;
+
+        // 顯示前往比大小按鈕
+        if (goCompareBtn) goCompareBtn.style.display = 'inline-block';
+
         return;
     }
+
+    // 隱藏前往比大小按鈕 (若未結束)
+    if (goCompareBtn) goCompareBtn.style.display = 'none';
 
     const currentRound = appSettings.rounds[currentRoundIndex];
     currentRoundNameEl.textContent = currentRound.name;
@@ -451,6 +459,13 @@ resetAllButton.addEventListener('click', (e) => {
         alert("所有輪次已重置。");
     }, 50);
 });
+
+if (goCompareBtn) {
+    goCompareBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'compareslot.html';
+    });
+}
 
 
 // ==========================================================
