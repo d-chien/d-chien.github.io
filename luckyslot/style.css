@@ -182,6 +182,12 @@ button {
     border-radius: 5px;
 }
 
+#drawn-numbers li.supplementary-number {
+    background-color: #ff9800;
+    color: white;
+    border: 1px solid #e65100;
+}
+
 /* Responsive Layout Logic */
 .game-layout {
     display: flex;

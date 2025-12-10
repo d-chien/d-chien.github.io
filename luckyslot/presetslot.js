@@ -18,6 +18,7 @@ const slotWheels = [
 const startButton = document.getElementById('start-button');
 const resetRoundButton = document.getElementById('reset-round-button');
 const resetAllButton = document.getElementById('reset-all-button');
+const supplementButton = document.getElementById('supplement-button');
 const goCompareBtn = document.getElementById('go-compare-btn');
 
 // 後台頁面元素
@@ -60,8 +61,11 @@ function initializeApp() {
         appSettings = JSON.parse(savedSettings);
     } else {
         // 預設一筆輪次資料方便測試
-        appSettings.rounds = [{ name: '第一輪', count: 1 }];
+        appSettings.rounds = [{ name: '第一輪', count: 1, allowSupplement: false }];
     }
+
+    // 當剛載入時，確保按鈕隱藏（防呆）
+    if (supplementButton) supplementButton.style.display = 'none';
 
     // 2. 讀取目前的遊戲狀態 (例如已進行到哪一輪，結果為何)
     const savedState = sessionStorage.getItem('presetRaffleState');
@@ -140,18 +144,43 @@ function updateMetaUI() {
     const currentRound = appSettings.rounds[currentRoundIndex];
     currentRoundNameEl.textContent = currentRound.name;
 
-    // 檢查該輪次是否已經抽完
+    // 檢查該輪次是否已經抽完 (基本數量)
     const currentResults = roundResults[currentRoundIndex] || [];
     const isRoundComplete = currentResults.length >= currentRound.count;
 
     roundStatusEl.textContent = `本輪獎項：${currentRound.name} (抽取 ${currentRound.count} 位)`;
-    startButton.textContent = "開始抽獎";
-    startButton.disabled = false;
 
-    // 如果當前輪次大於 0 (即有上一輪)，或者是已經執行過 (但 index 沒推進因為邏輯?)
-    // 這裡我們只判斷是否可重置：只要剛抽完一輪 (index 會+1)，所以 index > 0 就可以重置上一輪。
-    // 如果 index == 0，代表第一輪還沒開始，不能重置。
-    resetRoundButton.disabled = (currentRoundIndex === 0);
+    // 判斷按鈕狀態
+    if (isRoundComplete) {
+        // 如果已經抽完基本數量
+        if (currentRound.allowSupplement) {
+            // 啟用遞補模式
+            startButton.textContent = "進入下一輪";
+            startButton.disabled = false;
+            // 顯示遞補按鈕
+            if (supplementButton) {
+                supplementButton.style.display = 'inline-block';
+                supplementButton.disabled = false;
+            }
+        } else {
+            // 不能遞補，且已經抽完 -> 這裡理論上在自動跳轉時應該就被擋掉了，
+            // 但如果剛好在該狀態 (例如重新整理)，就顯示已完成等待進入下一輪 (或自動跳轉?)
+            // 照原本邏輯，不可遞補的輪次，抽完當下就會跳下一輪。
+            // 但如果是讀取存檔剛好卡在這個狀態? (例如手動修改 storage)
+            // 就讓它顯示進入下一輪
+            startButton.textContent = "進入下一輪";
+            startButton.disabled = false;
+            if (supplementButton) supplementButton.style.display = 'none';
+        }
+    } else {
+        // 還沒抽完
+        startButton.textContent = "開始抽獎";
+        startButton.disabled = false;
+        if (supplementButton) supplementButton.style.display = 'none';
+    }
+
+    // 重置按鈕邏輯
+    resetRoundButton.disabled = (currentRoundIndex === 0 && currentResults.length === 0);
     resetAllButton.disabled = false;
 }
 
@@ -182,9 +211,14 @@ function updateResultsUI() {
             li.style.color = '#999';
             ul.appendChild(li);
         } else {
-            results.forEach(num => {
+            results.forEach((num, idx) => {
                 const li = document.createElement('li');
                 li.textContent = num;
+                // 如果 index 超過 count，標記為遞補
+                if (idx >= round.count) {
+                    li.classList.add('supplementary-number');
+                    li.title = '遞補號碼';
+                }
                 ul.appendChild(li);
             });
         }
@@ -209,19 +243,28 @@ function renderSettingsUI() {
     // 輪次列表回填
     roundsConfigList.innerHTML = '';
     appSettings.rounds.forEach((round, index) => {
-        addRoundConfigRow(round.name, round.count, index);
+        addRoundConfigRow(round.name, round.count, round.allowSupplement);
     });
 }
 
-function addRoundConfigRow(name = '', count = 1, index = null) {
+function addRoundConfigRow(name = '', count = 1, allowSupplement = false) {
     const div = document.createElement('div');
     div.className = 'round-control-group';
+
+    // 產生唯一 ID 給 checkbox
+    const chkId = 'chk-' + Date.now() + Math.random().toString().substr(2, 5);
 
     div.innerHTML = `
         <label>名稱：</label>
         <input type="text" class="round-name" value="${name}" placeholder="獎項名稱">
         <label>數量：</label>
         <input type="number" class="round-count" value="${count}" min="1" style="width: 60px;">
+        
+        <div style="display: flex; align-items: center; margin-left: 10px; margin-right: 10px;">
+            <input type="checkbox" id="${chkId}" class="round-supplement" ${allowSupplement ? 'checked' : ''}>
+            <label for="${chkId}" style="margin: 0; font-size: 0.9em;">可遞補</label>
+        </div>
+
         <button type="button" class="remove-round-btn" style="background-color: #dc3545; padding: 5px 10px;">刪除</button>
     `;
 
@@ -237,7 +280,7 @@ function addRoundConfigRow(name = '', count = 1, index = null) {
 
 addRoundBtn.addEventListener('click', (e) => {
     e.preventDefault();
-    addRoundConfigRow('新輪次', 1);
+    addRoundConfigRow('新輪次', 1, false);
 });
 
 saveSettingsButton.addEventListener('click', (e) => {
@@ -260,8 +303,10 @@ saveSettingsButton.addEventListener('click', (e) => {
     roundRows.forEach(row => {
         const name = row.querySelector('.round-name').value;
         const count = parseInt(row.querySelector('.round-count').value);
+        const allowSupplement = row.querySelector('.round-supplement').checked;
+
         if (name && count > 0) {
-            newRounds.push({ name, count });
+            newRounds.push({ name, count, allowSupplement });
         }
     });
 
@@ -344,6 +389,17 @@ startButton.addEventListener('click', async (e) => {
     const currentRound = appSettings.rounds[currentRoundIndex];
     const countNeeded = currentRound.count;
 
+    // 檢查目前是否已經完成本輪（判定是否為「進入下一輪」按鈕）
+    const currentResults = roundResults[currentRoundIndex] || [];
+    if (currentResults.length >= countNeeded) {
+        // 使用者點擊了「進入下一輪」
+        currentRoundIndex++;
+        saveGameState();
+        updateResultsUI();
+        updateMetaUI();
+        return;
+    }
+
     if (availableNumbers.length < countNeeded) {
         alert(`號碼不足！本輪需要 ${countNeeded} 個，目前只剩 ${availableNumbers.length} 個。`);
         return;
@@ -353,6 +409,7 @@ startButton.addEventListener('click', async (e) => {
     startButton.disabled = true;
     resetRoundButton.disabled = true;
     resetAllButton.disabled = true;
+    if (supplementButton) supplementButton.disabled = true;
 
     // 抽出號碼
     const thisDrawResults = [];
@@ -380,14 +437,65 @@ startButton.addEventListener('click', async (e) => {
     // 紀錄結果
     roundResults[currentRoundIndex] = thisDrawResults;
 
-    // 推進輪次 (User Requirement: 再次點擊就進行下一個輪次的抽獎)
-    currentRoundIndex++;
-
-    // 儲存並更新
-    saveGameState();
-    updateResultsUI();
-    updateMetaUI();
+    // 判斷是否要推進輪次
+    if (currentRound.allowSupplement) {
+        // 如果允許遞補，則停留在本輪，等待使用者後續操作（遞補或點擊下一輪）
+        // 不做 currentRoundIndex++
+        saveGameState();
+        updateResultsUI();
+        updateMetaUI(); // 這裡會把按鈕變成 "進入下一輪"，並顯示遞補按鈕
+    } else {
+        // 不允許遞補，直接進入下一輪
+        currentRoundIndex++;
+        saveGameState();
+        updateResultsUI();
+        updateMetaUI();
+    }
 });
+
+// 遞補按鈕事件
+if (supplementButton) {
+    supplementButton.addEventListener('click', async (e) => {
+        e.preventDefault();
+
+        if (currentRoundIndex >= appSettings.rounds.length) return;
+
+        if (availableNumbers.length < 1) {
+            alert("號碼池已空，無法遞補！");
+            return;
+        }
+
+        // 鎖定 UI
+        startButton.disabled = true;
+        supplementButton.disabled = true;
+        resetRoundButton.disabled = true;
+        resetAllButton.disabled = true;
+
+        // 抽 1 個
+        const num = drawSingleNumber();
+        takenNumbers.push(num);
+
+        // 加入結果
+        if (!roundResults[currentRoundIndex]) {
+            roundResults[currentRoundIndex] = [];
+        }
+        roundResults[currentRoundIndex].push(num);
+
+        // 動畫
+        const numStr = num.toString().padStart(3, '0');
+        const digits = numStr.split('').map(Number);
+
+        slotWheels.forEach(w => w.textContent = '');
+        for (let i = 0; i < 3; i++) {
+            await spinWheel(slotWheels[i], digits[i], 1000);
+        }
+
+        // 儲存並更新
+        saveGameState();
+        updateResultsUI();
+        updateMetaUI(); // 按鈕狀態恢復
+    });
+}
 
 
 // ==========================================================
@@ -398,13 +506,23 @@ startButton.addEventListener('click', async (e) => {
 resetRoundButton.addEventListener('click', (e) => {
     e.preventDefault();
 
-    if (currentRoundIndex === 0) {
+    const currentResults = roundResults[currentRoundIndex] || [];
+    let targetIndex;
+
+    // 判斷重置目標：
+    // 如果當前輪次已有結果（代表處於遞補階段，或剛抽完還沒按下一輪），則重置當前輪次
+    // 如果當前輪次無結果，則重置上一輪
+    if (currentResults.length > 0) {
+        targetIndex = currentRoundIndex;
+    } else {
+        targetIndex = currentRoundIndex - 1;
+    }
+
+    if (targetIndex < 0) {
         alert("尚無抽獎紀錄可重置。");
         return;
     }
 
-    // 目標重置的 index
-    const targetIndex = currentRoundIndex - 1;
     const targetRoundName = appSettings.rounds[targetIndex].name;
 
     if (!confirm(`確定要重置「${targetRoundName}」的抽獎結果嗎？抽出的號碼將會放回號碼池。`)) {
@@ -418,7 +536,7 @@ resetRoundButton.addEventListener('click', (e) => {
     // 從 results 移除
     delete roundResults[targetIndex];
 
-    // 2. 退回 index
+    // 2. 退回 index (如果是重置上一輪，index 要退回；如果是重置當前，index 不變)
     currentRoundIndex = targetIndex;
 
     // 3. 重建 available
