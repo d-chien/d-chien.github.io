@@ -38,11 +38,13 @@ let drawnNumbers = [];
 // 3. 頁面切換功能
 // ==========================================================
 toggleViewButton.addEventListener('click', () => {
+    // 當主頁面隱藏，點選後台按鈕，顯示主頁面，隱藏後台頁面
     if (mainPage.style.display === 'none') {
         mainPage.style.display = 'block';
         settingsPage.style.display = 'none';
         toggleViewButton.textContent = '切換至後台';
     } else {
+        // 當主頁面顯示，點選主頁按鈕，隱藏主頁面，顯示後台頁面
         mainPage.style.display = 'none';
         settingsPage.style.display = 'block';
         toggleViewButton.textContent = '切換至主頁';
@@ -57,7 +59,7 @@ function initializeApp() {
     // 確保號碼清單在每次初始化前都被清空
     availableNumbers = [];
 
-    // 檢查 sessionStorage 中是否有設定資料
+    // 檢查 sessionStorage 中是否有設定資料，並預先定義一個setting預設值
     const savedSettings = sessionStorage.getItem('raffleSettings');
     let settings = {
         rangeStart: 1,
@@ -73,6 +75,7 @@ function initializeApp() {
     // 更新後台頁面的輸入框顯示
     rangeStartInput.value = settings.rangeStart;
     rangeEndInput.value = settings.rangeEnd;
+    // 將排除號碼Array轉換成逗號分隔的字串
     excludeNumbersInput.value = settings.excludeNumbers.join(', ');
 
     // 根據設定建立可抽取的號碼清單
