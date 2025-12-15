@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 聖誕晚會-幸運抽獎</title>
+    <link rel="icon" href="logo.svg">
+    <style>
+        /* =========================================
+           Modified CSS from style.css
+           ========================================= */
+        body {
+            /* Global Font Size Variable for Results */
+            --result-font-size: 2.5rem;
+
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #333;
+            text-align: center;
+            background-image: url('background.webp');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            width: 100%;
+        }
+
+        header,
+        footer {
+            padding: 20px 0;
+            width: 100%;
+        }
+
+        header h1,
+        header p {
+            margin: 0;
+            color: #f6f1f1;
+        }
+
+        main {
+            background: rgba(238, 233, 233, 0.5);
+            /* Increased opacity for readability */
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            transition: max-width 0.3s ease;
+        }
+
+        footer {
+            text-align: center;
+        }
+
+        h1,
+        h2 {
+            color: #f6f1f1;
+        }
+
+        /* Override h2 inside main usually needs to be dark? 
+           Original CSS says h1, h2 color white. But main has white background. 
+           Let's fix h2 in main to be dark or keep as is if it works. 
+           In original, main background is rgba(238, 233, 233, 0.5), so white text might be hard to read?
+           Wait, #f6f1f1 is off-white. 
+           Let's check original logic. H1/H2 in header are white. H2 in settings page? 
+           Let's make sure text in main is readable. 
+           I'll add a rule for h2 inside main specific if needed. 
+        */
+        main h2,
+        main h3 {
+            color: #333;
+        }
+
+        /* Slot Machine Styles */
+        .slot-container-flex {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .slot-wheel {
+            width: 100px;
+            height: 140px;
+            border: 3px solid #0056b3;
+            border-radius: 10px;
+            overflow: hidden;
+            background-color: #e6f2ff;
+            position: relative;
+            font-size: 80px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.2s ease-out;
+        }
+
+        /* Controls */
+        .controls,
+        .settings-controls {
+            margin-bottom: 20px;
+        }
+
+        label {
+            margin-right: 10px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+            margin: 5px;
+        }
+
+        /* Button Colors Classes */
+        .btn-start {
+            background-color: #3128a7;
+            color: white;
+        }
+
+        .btn-start:hover {
+            background-color: #3128a7b3;
+        }
+
+        .btn-reset {
+            background-color: #eb6270;
+            color: white;
+        }
+
+        .btn-reset:hover {
+            background-color: #c82333;
+        }
+
+        .btn-save,
+        .btn-primary {
+            background-color: #fafcfe;
+            color: black;
+        }
+
+        .btn-save:hover,
+        .btn-primary:hover {
+            background-color: #eef1f5;
+        }
+
+        .btn-toggle,
+        .btn-home {
+            background-color: #6c757d;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .btn-toggle:hover,
+        .btn-home:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-supp {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-compare {
+            background-color: #10b2f2;
+            color: white;
+        }
+
+        /* Results */
+        .result-display-area {
+            text-align: left;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .drawn-numbers-list {
+            list-style-type: none;
+            padding: 0;
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .drawn-numbers-list li {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: var(--result-font-size);
+            font-weight: bold;
+        }
+
+        /* Unified result ball style for Preset Slot */
+        .result-number-ball {
+            background: #e9ecef;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: var(--result-font-size);
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .drawn-numbers-list li.supplementary-number,
+        .result-number-ball.supplementary-number {
+            background-color: #ff9800;
+            color: white;
+            border: 1px solid #e65100;
+        }
+
+        /* Layout */
+        .game-layout {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .game-left {
+            width: 100%;
+        }
+
+        /* Preset Specific */
+        .round-control-group {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .round-list-item {
+            display: flex;
+            justify-content: space-between;
+            background: #f9f9f9;
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #eee;
+        }
+
+        .current-round-info {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #e83e8c;
+            margin-bottom: 15px;
+        }
+
+        @media (min-width: 800px) {
+            main {
+                max-width: 1000px;
+            }
+
+            .game-layout {
+                flex-direction: row;
+                align-items: flex-start;
+                justify-content: space-between;
+                gap: 20px;
+            }
+
+            .game-left {
+                flex: 1;
+                min-width: 0;
+            }
+
+            .result-display-area {
+                width: 45%;
+                max-width: 45%;
+                margin-top: 0;
+                border-left: 1px solid #eee;
+                padding-left: 20px;
+            }
+        }
+
+        /* Menu Styles */
+        .menu-buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .menu-buttons button {
+            width: 50%;
+            padding: 20px;
+            font-size: 24px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header id="app-header">
+        <h1 id="app-title">2025 聖誕晚會</h1>
+        <p id="app-subtitle">選擇模式</p>
+    </header>
+
+    <main>
+
+        <!-- =======================
+             VIEW: MENU
+             ======================= -->
+        <div id="view-menu">
+            <div class="menu-buttons">
+                <button onclick="switchMode('single')" class="btn-primary">一般拉霸</button>
+                <button onclick="switchMode('preset')" class="btn-primary">超級抽獎</button>
+                <button onclick="switchMode('compare')" class="btn-primary">頭獎爭霸</button>
+            </div>
+        </div>
+
+        <!-- =======================
+             VIEW: SINGLE SLOT
+             ======================= -->
+        <div id="view-single" style="display: none;">
+            <!-- Main Game -->
+            <section id="s-main-page">
+                <div class="game-layout">
+                    <div class="game-left">
+                        <div id="s-slot-container" class="slot-container-flex">
+                            <div class="slot-wheel" id="s-wheel-1">0</div>
+                            <div class="slot-wheel" id="s-wheel-2">0</div>
+                            <div class="slot-wheel" id="s-wheel-3">0</div>
+                        </div>
+
+                        <div class="controls">
+                            <label for="s-draw-count-input">抽取數量：</label>
+                            <input type="number" id="s-draw-count-input" value="1" min="1" max="100">
+                            <button id="s-start-button" class="btn-start">開始拉霸</button>
+                            <button id="s-reset-button" class="btn-reset">重置</button>
+                        </div>
+                    </div>
+
+                    <div id="s-result-display" class="result-display-area">
+                        <h3>已抽取的號碼：</h3>
+                        <ul id="s-drawn-numbers" class="drawn-numbers-list"></ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section id="s-settings-page" style="display: none;">
+                <h2>後台設定 (一般)</h2>
+                <div class="settings-controls">
+                    <p>可抽取的數字範圍：</p>
+                    <label for="s-range-start">從</label>
+                    <input type="number" id="s-range-start" value="1" min="0" max="999">
+                    <label for="s-range-end">到</label>
+                    <input type="number" id="s-range-end" value="999" min="0" max="999">
+                </div>
+                <div class="settings-controls">
+                    <label for="s-exclude-numbers">排除號碼 (以逗號分隔)：</label>
+                    <input type="text" id="s-exclude-numbers" placeholder="例: 1, 12, 123">
+                </div>
+                <div class="settings-buttons">
+                    <button id="s-save-settings" class="btn-save">儲存</button>
+                    <button id="s-clear-settings" class="btn-reset">清除</button>
+                </div>
+            </section>
+
+            <footer>
+                <button id="s-toggle-view" class="btn-toggle">切換至後台</button>
+                <button id="s-back-home" class="btn-home" onclick="switchMode('menu')">回首頁</button>
+            </footer>
+        </div>
+
+        <!-- =======================
+             VIEW: PRESET SLOT
+             ======================= -->
+        <div id="view-preset" style="display: none;">
+            <section id="p-main-page">
+                <div class="game-layout">
+                    <div class="game-left">
+                        <div id="p-slot-container" class="slot-container-flex">
+                            <div class="slot-wheel" id="p-wheel-1">0</div>
+                            <div class="slot-wheel" id="p-wheel-2">0</div>
+                            <div class="slot-wheel" id="p-wheel-3">0</div>
+                        </div>
+
+                        <div class="controls">
+                            <div class="current-round-info" id="p-round-status">目前無設定輪次</div>
+                            <button type="button" id="p-start-button" class="btn-start">開始本輪抽獎</button>
+                            <div style="margin-top: 10px;">
+                                <button type="button" id="p-reset-round-button" class="btn-reset">重置本輪</button>
+                                <button type="button" id="p-reset-all-button" class="btn-reset">全部重置</button>
+                                <button type="button" id="p-supplement-button" class="btn-supp"
+                                    style="display: none;">遞補抽選</button>
+                                <button type="button" id="p-go-compare-btn" class="btn-compare" style="display: none;"
+                                    onclick="switchMode('compare')">前往比大小</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="p-result-display" class="result-display-area">
+                        <h3>抽獎結果：</h3>
+                        <div id="p-round-results-container"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="p-settings-page" style="display: none;">
+                <h2>後台設定 (超級抽獎)</h2>
+                <div class="settings-controls">
+                    <h3>1. 數字範圍設定</h3>
+                    <label for="p-range-start">從</label>
+                    <input type="number" id="p-range-start" value="1" min="0" max="999">
+                    <label for="p-range-end">到</label>
+                    <input type="number" id="p-range-end" value="150" min="0" max="999">
+                </div>
+                <div class="settings-controls">
+                    <label for="p-exclude-numbers">排除號碼 (以逗號分隔)：</label>
+                    <input type="text" id="p-exclude-numbers" placeholder="例: 1, 12, 123">
+                </div>
+                <hr>
+                <div class="settings-controls">
+                    <h3>2. 輪次設定</h3>
+                    <div id="p-rounds-config-list"></div>
+                    <button type="button" id="p-add-round-btn" class="btn-save">+ 新增輪次</button>
+                </div>
+                <div class="settings-buttons">
+                    <button type="button" id="p-save-settings" class="btn-save">儲存設定</button>
+                    <button type="button" id="p-clear-settings" class="btn-reset">清除設定</button>
+                </div>
+            </section>
+
+            <footer>
+                <button id="p-toggle-view" class="btn-toggle">切換至後台</button>
+                <button id="p-back-home" class="btn-home" onclick="switchMode('menu')">回首頁</button>
+            </footer>
+        </div>
+
+        <!-- =======================
+             VIEW: COMPARE SLOT
+             ======================= -->
+        <div id="view-compare" style="display: none;">
+            <p id="c-game-status" style="font-weight:bold; margin-bottom:10px;">設定人數並開始</p>
+            <section id="c-main-page">
+                <div class="game-layout">
+                    <div class="game-left">
+                        <div id="c-slot-container" class="slot-container-flex">
+                            <div class="slot-wheel" id="c-wheel-1">0</div>
+                            <div class="slot-wheel" id="c-wheel-2">0</div>
+                            <div class="slot-wheel" id="c-wheel-3">0</div>
+                        </div>
+
+                        <div class="controls">
+                            <div id="c-setup-panel">
+                                <div style="margin-bottom: 10px;">
+                                    <label for="c-player-count">參與人數：</label>
+                                    <input type="number" id="c-player-count" value="3" min="2" max="20"
+                                        style="width: 60px;">
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label>獲勝條件：</label>
+                                    <label style="margin-right: 10px; cursor: pointer;">
+                                        <input type="radio" name="c-win-condition" value="big" checked> 比大
+                                    </label>
+                                    <label style="cursor: pointer;">
+                                        <input type="radio" name="c-win-condition" value="small"> 比小
+                                    </label>
+                                </div>
+                                <button id="c-init-game-btn" class="btn-primary">設定並開始</button>
+                            </div>
+
+                            <div id="c-play-panel" style="display: none; margin-top: 15px;">
+                                <div class="current-round-info" id="c-current-player-info">
+                                    請 第 1 位 玩家抽獎
+                                </div>
+                                <button id="c-draw-btn" class="btn-start">抽號碼</button>
+                                <button id="c-reset-game-btn" class="btn-reset">重置遊戲</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="c-result-display" class="result-display-area">
+                        <h3>頭獎爭霸結果：</h3>
+                        <ul id="c-drawn-numbers" class="drawn-numbers-list"></ul>
+                        <div id="c-final-verdict" style="margin-top: 20px; font-weight: bold; color: #d63384;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="c-settings-page" style="display: none;">
+                <h2>後台設定 (比大小)</h2>
+                <div class="settings-controls">
+                    <p>可抽取的數字範圍：</p>
+                    <label for="c-range-start">從</label>
+                    <input type="number" id="c-range-start" value="1" min="0" max="999">
+                    <label for="c-range-end">到</label>
+                    <input type="number" id="c-range-end" value="999" min="0" max="999">
+                </div>
+                <div class="settings-controls">
+                    <label for="c-exclude-numbers">排除號碼 (以逗號分隔)：</label>
+                    <input type="text" id="c-exclude-numbers" placeholder="例: 1, 12, 123">
+                </div>
+                <div class="settings-buttons">
+                    <button id="c-save-settings" class="btn-save">儲存</button>
+                    <button id="c-clear-settings" class="btn-reset">清除</button>
+                </div>
+            </section>
+
+            <footer>
+                <button id="c-toggle-view" class="btn-toggle">切換至後台</button>
+                <button id="c-back-home" class="btn-home" onclick="switchMode('menu')">回首頁</button>
+            </footer>
+        </div>
+
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Kiamkio Church</p>
+    </footer>
+
+    <!-- SHARED NAVIGATION SCRIPT -->
+    <script>
+        function switchMode(mode) {
+            const headerTitle = document.getElementById('app-title');
+            const headerSubtitle = document.getElementById('app-subtitle');
+
+            // Hide all views
+            document.getElementById('view-menu').style.display = 'none';
+            document.getElementById('view-single').style.display = 'none';
+            document.getElementById('view-preset').style.display = 'none';
+            document.getElementById('view-compare').style.display = 'none';
+
+            if (mode === 'menu') {
+                document.getElementById('view-menu').style.display = 'block';
+                headerTitle.textContent = '2025 聖誕晚會';
+                headerSubtitle.textContent = '選擇模式';
+            } else if (mode === 'single') {
+                document.getElementById('view-single').style.display = 'block';
+                document.getElementById('s-main-page').style.display = 'block';
+                document.getElementById('s-settings-page').style.display = 'none';
+                headerTitle.textContent = '一般拉霸';
+                headerSubtitle.textContent = 'Single Slot';
+            } else if (mode === 'preset') {
+                document.getElementById('view-preset').style.display = 'block';
+                document.getElementById('p-main-page').style.display = 'block';
+                document.getElementById('p-settings-page').style.display = 'none';
+                headerTitle.textContent = '超級抽獎';
+                headerSubtitle.textContent = 'Main Rounds';
+            } else if (mode === 'compare') {
+                document.getElementById('view-compare').style.display = 'block';
+                document.getElementById('c-main-page').style.display = 'block';
+                document.getElementById('c-settings-page').style.display = 'none';
+                headerTitle.textContent = '頭獎爭霸';
+                headerSubtitle.textContent = 'Big or Small';
+            }
+        }
+    </script>
+
+    <!-- SINGLE SLOT LOGIC -->
+    <script id="script-single">
+        (function () {
+            // IDs Mapping
+            const slotWheels = [
+                document.getElementById('s-wheel-1'),
+                document.getElementById('s-wheel-2'),
+                document.getElementById('s-wheel-3')
+            ];
+            const startButton = document.getElementById('s-start-button');
+            const resetButton = document.getElementById('s-reset-button');
+            const drawCountInput = document.getElementById('s-draw-count-input');
+            const drawnNumbersList = document.getElementById('s-drawn-numbers');
+
+            const rangeStartInput = document.getElementById('s-range-start');
+            const rangeEndInput = document.getElementById('s-range-end');
+            const excludeNumbersInput = document.getElementById('s-exclude-numbers');
+            const saveSettingsButton = document.getElementById('s-save-settings');
+            const clearSettingsButton = document.getElementById('s-clear-settings');
+
+            const toggleViewButton = document.getElementById('s-toggle-view');
+            const mainPage = document.getElementById('s-main-page');
+            const settingsPage = document.getElementById('s-settings-page');
+
+            // State
+            let availableNumbers = [];
+            let drawnNumbers = [];
+
+            // Navigation Logic (Internal View Toggle)
+            toggleViewButton.addEventListener('click', () => {
+                if (mainPage.style.display === 'none') {
+                    mainPage.style.display = 'block';
+                    settingsPage.style.display = 'none';
+                    toggleViewButton.textContent = '切換至後台';
+                } else {
+                    mainPage.style.display = 'none';
+                    settingsPage.style.display = 'block';
+                    toggleViewButton.textContent = '切換至主頁';
+                }
+            });
+
+            // Initialize
+            function initializeApp() {
+                availableNumbers = [];
+                // Use local storage key specific to single slot to avoid conflict with others if needed, 
+                // but original used 'raffleSettings' so we keep it or rename?
+                // "確保沒有重疊變數" -> safe to keep sessionStorage key 'raffleSettings'? 
+                // The user said "function naming" and "variables". LocalStorage keys are shared.
+                // If preset slot uses a different key, it's fine.
+                // Preset slot uses ??? I haven't checked preset slot storage key.
+                // Compare slot uses 'compareRaffleSettings'.
+                // I'll stick to 'raffleSettings' for single slot.
+
+                const savedSettings = sessionStorage.getItem('raffleSettings');
+                let settings = {
+                    rangeStart: 1,
+                    rangeEnd: 999,
+                    excludeNumbers: []
+                };
+
+                if (savedSettings) {
+                    try {
+                        settings = JSON.parse(savedSettings);
+                    } catch (e) { console.error(e); }
+                }
+
+                rangeStartInput.value = settings.rangeStart;
+                rangeEndInput.value = settings.rangeEnd;
+                excludeNumbersInput.value = settings.excludeNumbers.join(', ');
+
+                for (let i = settings.rangeStart; i <= settings.rangeEnd; i++) {
+                    if (!settings.excludeNumbers.includes(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+            }
+
+            function updateDrawnNumbersDisplay() {
+                drawnNumbersList.innerHTML = '';
+                drawnNumbers.forEach(number => {
+                    const li = document.createElement('li');
+                    li.textContent = number;
+                    drawnNumbersList.appendChild(li);
+                });
+            }
+
+            saveSettingsButton.addEventListener('click', () => {
+                const start = parseInt(rangeStartInput.value);
+                const end = parseInt(rangeEndInput.value);
+                const excludeNumbersString = excludeNumbersInput.value;
+                const excludeNumbersArray = excludeNumbersString
+                    .split(',')
+                    .map(s => parseInt(s.trim()))
+                    .filter(n => !isNaN(n));
+
+                const settings = {
+                    rangeStart: start,
+                    rangeEnd: end,
+                    excludeNumbers: excludeNumbersArray
+                };
+
+                sessionStorage.setItem('raffleSettings', JSON.stringify(settings));
+                alert('設定已儲存！');
+                initializeApp();
+            });
+
+            clearSettingsButton.addEventListener('click', () => {
+                sessionStorage.removeItem('raffleSettings');
+                alert('設定已清除！頁面將重置。');
+                initializeApp();
+            });
+
+            function drawSingleNumber() {
+                if (availableNumbers.length === 0) {
+                    alert('沒有可抽取的號碼了！');
+                    return null;
+                }
+                const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+                const drawnNumber = availableNumbers.splice(randomIndex, 1)[0];
+                return drawnNumber;
+            }
+
+            async function startRaffle() {
+                const drawCount = parseInt(drawCountInput.value);
+                if (isNaN(drawCount) || drawCount <= 0) {
+                    alert('請輸入有效的抽獎數量。');
+                    return;
+                }
+                if (drawCount > availableNumbers.length) {
+                    alert(`可抽取號碼不足！目前剩下 ${availableNumbers.length} 個號碼。`);
+                    return;
+                }
+
+                startButton.disabled = true;
+                resetButton.disabled = true;
+
+                for (let i = 0; i < drawCount; i++) {
+                    const number = drawSingleNumber();
+                    if (number !== null) {
+                        drawnNumbers.push(number);
+                    }
+                }
+
+                const lastDrawnNumber = drawnNumbers[drawnNumbers.length - 1];
+                const numStr = lastDrawnNumber.toString().padStart(3, '0');
+                const digits = numStr.split('').map(Number);
+                const spinDuration = 1000;
+
+                for (let i = 0; i < 3; i++) {
+                    slotWheels[i].textContent = '';
+                }
+
+                for (let i = 0; i < 3; i++) {
+                    await new Promise(resolve => {
+                        spinWheel(slotWheels[i], digits[i], spinDuration);
+                        setTimeout(resolve, spinDuration + 100);
+                    });
+                }
+
+                updateDrawnNumbersDisplay();
+                startButton.disabled = false;
+                resetButton.disabled = false;
+            }
+
+            startButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                startRaffle();
+            });
+
+            resetButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                const confirmReset = window.confirm('確定要重置嗎？所有已抽取的號碼都會被清除。');
+                if (confirmReset) {
+                    drawnNumbers = [];
+                    initializeApp();
+                    updateDrawnNumbersDisplay();
+                    slotWheels.forEach(w => w.textContent = '0');
+                    alert('已重置！現在可以重新抽取號碼。');
+                }
+            });
+
+            function spinWheel(wheelElement, finalNumber, duration) {
+                const startTime = Date.now();
+                const interval = 50;
+                const timer = setInterval(() => {
+                    const elapsedTime = Date.now() - startTime;
+                    if (elapsedTime >= duration) {
+                        clearInterval(timer);
+                        wheelElement.textContent = finalNumber;
+                        return;
+                    }
+                    const randomNumber = Math.floor(Math.random() * 10);
+                    wheelElement.textContent = randomNumber;
+                }, interval);
+            }
+
+            // Init
+            initializeApp();
+        })();
+    </script>
+
+    <!-- PRESET SLOT LOGIC -->
+    <script id="script-preset">
+        (function () {
+            // Namespaced Selectors
+            const slotWheels = [
+                document.getElementById('p-wheel-1'),
+                document.getElementById('p-wheel-2'),
+                document.getElementById('p-wheel-3')
+            ];
+            // Display
+            const currentRoundInfo = document.getElementById('p-round-status');
+            const roundResultsContainer = document.getElementById('p-round-results-container');
+            const resultDisplay = document.getElementById('p-result-display');
+
+            // Controls
+            const startButton = document.getElementById('p-start-button');
+            const resetRoundButton = document.getElementById('p-reset-round-button');
+            const resetAllButton = document.getElementById('p-reset-all-button');
+            const supplementButton = document.getElementById('p-supplement-button');
+            const goCompareBtn = document.getElementById('p-go-compare-btn');
+
+            // Settings Elements
+            const rangeStartInput = document.getElementById('p-range-start');
+            const rangeEndInput = document.getElementById('p-range-end');
+            const excludeNumbersInput = document.getElementById('p-exclude-numbers');
+            const roundsConfigList = document.getElementById('p-rounds-config-list');
+            const addRoundBtn = document.getElementById('p-add-round-btn');
+            const saveSettingsButton = document.getElementById('p-save-settings');
+            const clearSettingsButton = document.getElementById('p-clear-settings');
+
+            // Views
+            const toggleViewButton = document.getElementById('p-toggle-view');
+            const mainPage = document.getElementById('p-main-page');
+            const settingsPage = document.getElementById('p-settings-page');
+
+            // State Variables
+            let availableNumbers = [];
+            let takenNumbers = []; // Numbers already drawn across all rounds
+            let currentRoundIndex = 0;
+            let roundResults = {}; // { 0: [123, 456], ... }
+
+            // Default Settings
+            let appSettings = {
+                rangeStart: 1,
+                rangeEnd: 150,
+                excludeNumbers: [],
+                rounds: [
+                    { name: '16-20獎', count: 5, allowSupplement: false },
+                    { name: '11-15獎', count: 5, allowSupplement: false },
+                    { name: '6-10獎', count: 5, allowSupplement: false },
+                    { name: '2-5獎', count: 4, allowSupplement: true },
+                    { name: '1-3獎', count: 3, allowSupplement: true }
+                ]
+            };
+
+            // --- Initialization ---
+            function initializeApp() {
+                loadSettings();
+                loadGameState();
+                rebuildAvailableNumbers();
+                updateMetaUI();
+                updateResultsUI();
+
+                // Render settings UI initially
+                renderSettingsUI();
+            }
+
+            function loadSettings() {
+                const saved = sessionStorage.getItem('presetRaffleSettings');
+                if (saved) {
+                    try {
+                        appSettings = JSON.parse(saved);
+                    } catch (e) { console.error(e); }
+                }
+            }
+
+            function loadGameState() {
+                const savedState = sessionStorage.getItem('presetRaffleState');
+                if (savedState) {
+                    try {
+                        const state = JSON.parse(savedState);
+                        currentRoundIndex = state.currentRoundIndex || 0;
+                        roundResults = state.roundResults || {};
+                        takenNumbers = state.takenNumbers || [];
+                    } catch (e) { console.error(e); }
+                } else {
+                    currentRoundIndex = 0;
+                    roundResults = {};
+                    takenNumbers = [];
+                }
+            }
+
+            function saveGameState() {
+                const state = {
+                    currentRoundIndex,
+                    roundResults,
+                    takenNumbers
+                };
+                sessionStorage.setItem('presetRaffleState', JSON.stringify(state));
+            }
+
+            function rebuildAvailableNumbers() {
+                availableNumbers = [];
+                const exclude = new Set(appSettings.excludeNumbers);
+                const taken = new Set(takenNumbers);
+
+                for (let i = appSettings.rangeStart; i <= appSettings.rangeEnd; i++) {
+                    if (!exclude.has(i) && !taken.has(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+            }
+
+            // --- UI Updates ---
+            function updateMetaUI() {
+                if (currentRoundIndex >= appSettings.rounds.length) {
+                    currentRoundInfo.textContent = "所有輪次抽獎結束！";
+                    startButton.style.display = 'none';
+                    supplementButton.style.display = 'none';
+                    resetRoundButton.style.display = 'none'; // Or keep?
+                    if (goCompareBtn) goCompareBtn.style.display = 'inline-block';
+                    return;
+                }
+
+                const currentRound = appSettings.rounds[currentRoundIndex];
+                const currentResults = roundResults[currentRoundIndex] || [];
+
+                // Check if round is fully drawn
+                if (currentResults.length >= currentRound.count) {
+                    // Round complete (or partial complete if mult-draw logic differs, but here assume exact count)
+                    // However, supplement might mean we have MORE than count.
+                    // Logic: If we have drawn enough, show "Next Round" button unless supplement active?
+                    // The original logic re-purposes startButton as "Enter Next Round"
+
+                    if (currentRound.allowSupplement) {
+                        currentRoundInfo.textContent = `當前輪次：${currentRound.name} (已完成，可遞補)`;
+                        startButton.textContent = "進入下一輪";
+                        startButton.disabled = false;
+                        startButton.style.display = 'inline-block';
+                        supplementButton.style.display = 'inline-block';
+                        supplementButton.disabled = false;
+                    } else {
+                        currentRoundInfo.textContent = `當前輪次：${currentRound.name} (已完成)`;
+                        startButton.textContent = "進入下一輪";
+                        startButton.disabled = false;
+                        startButton.style.display = 'inline-block';
+                        supplementButton.style.display = 'none';
+                    }
+                } else {
+                    // Not finished
+                    currentRoundInfo.textContent = `當前輪次：${currentRound.name} (共 ${currentRound.count} 名)`;
+                    startButton.textContent = "開始本輪抽獎";
+                    startButton.disabled = false;
+                    startButton.style.display = 'inline-block';
+                    supplementButton.style.display = 'none';
+                }
+
+                if (goCompareBtn) goCompareBtn.style.display = 'none';
+                resetRoundButton.disabled = false;
+                resetAllButton.disabled = false;
+            }
+
+            function updateResultsUI() {
+                roundResultsContainer.innerHTML = '';
+
+                // Show all past results + current
+                // Display order: latest at top? Or by round order?
+                // Usually round order 1..N.
+
+                appSettings.rounds.forEach((round, index) => {
+                    const results = roundResults[index];
+                    if (results && results.length > 0) {
+                        const roundDiv = document.createElement('div');
+                        roundDiv.className = 'round-result-block';
+                        roundDiv.style.marginBottom = '10px';
+                        roundDiv.style.borderBottom = '1px dashed #ccc';
+                        roundDiv.style.paddingBottom = '5px';
+
+                        const title = document.createElement('h4');
+                        title.textContent = round.name;
+                        title.style.margin = '5px 0';
+                        title.style.color = '#555';
+
+                        const list = document.createElement('div');
+                        list.style.display = 'flex';
+                        list.style.flexWrap = 'wrap';
+                        list.style.gap = '10px';
+
+                        results.forEach((num, idx) => {
+                            const span = document.createElement('span');
+                            span.textContent = num;
+                            span.className = 'result-number-ball';
+
+                            // Check if this is a supplementary number (index >= count)
+                            if (idx >= round.count) {
+                                span.classList.add('supplementary-number');
+                            }
+
+                            list.appendChild(span);
+                        });
+
+                        roundDiv.appendChild(title);
+                        roundDiv.appendChild(list);
+                        roundResultsContainer.appendChild(roundDiv);
+                    }
+                });
+            }
+
+            // --- Core Logic ---
+            function drawSingleNumber() {
+                if (availableNumbers.length === 0) return null;
+                const idx = Math.floor(Math.random() * availableNumbers.length);
+                const num = availableNumbers.splice(idx, 1)[0];
+                return num;
+            }
+
+            function spinWheel(wheelElement, finalNumber, duration) {
+                const startTime = Date.now();
+                const interval = 50;
+                return new Promise(resolve => {
+                    const timer = setInterval(() => {
+                        const elapsedTime = Date.now() - startTime;
+                        if (elapsedTime >= duration) {
+                            clearInterval(timer);
+                            wheelElement.textContent = finalNumber;
+                            resolve();
+                            return;
+                        }
+                        wheelElement.textContent = Math.floor(Math.random() * 10);
+                    }, interval);
+                });
+            }
+
+            startButton.addEventListener('click', async (e) => {
+                e.preventDefault();
+                if (currentRoundIndex >= appSettings.rounds.length) return;
+
+                const currentRound = appSettings.rounds[currentRoundIndex];
+                const countNeeded = currentRound.count;
+                const currentResults = roundResults[currentRoundIndex] || [];
+
+                // If already done, this button acts as "Next Round"
+                if (currentResults.length >= countNeeded) {
+                    currentRoundIndex++;
+                    saveGameState();
+                    updateMetaUI(); // Will update button text
+                    // updateResultsUI(); // No change in results
+                    return;
+                }
+
+                if (availableNumbers.length < (countNeeded - currentResults.length)) {
+                    alert(`號碼不足！本輪尚需 ${countNeeded - currentResults.length} 個，目前剩 ${availableNumbers.length} 個。`);
+                    return;
+                }
+
+                // Lock UI
+                startButton.disabled = true;
+                resetRoundButton.disabled = true;
+                resetAllButton.disabled = true;
+                if (supplementButton) supplementButton.disabled = true;
+
+                // Draw remaining count
+                const drawAmount = countNeeded - currentResults.length;
+                const thisDrawResults = [];
+
+                for (let i = 0; i < drawAmount; i++) {
+                    const num = drawSingleNumber();
+                    if (num !== null) {
+                        thisDrawResults.push(num);
+                        takenNumbers.push(num);
+                    }
+                }
+
+                // Animate only the last one drawn? Or general animation?
+                // User code showed specific animation logic.
+                // We'll animate the last drawn number.
+                const lastNum = thisDrawResults[thisDrawResults.length - 1];
+                const numStr = lastNum.toString().padStart(3, '0');
+                const digits = numStr.split('').map(Number);
+
+                slotWheels.forEach(w => w.textContent = '');
+                for (let i = 0; i < 3; i++) {
+                    await spinWheel(slotWheels[i], digits[i], 1000);
+                }
+
+                // Save results
+                if (!roundResults[currentRoundIndex]) roundResults[currentRoundIndex] = [];
+                roundResults[currentRoundIndex].push(...thisDrawResults);
+
+                saveGameState();
+                updateResultsUI();
+
+                // Check if we need to advance immediately
+                if (!currentRound.allowSupplement) {
+                    currentRoundIndex++; // Auto advance logic from original
+                    // Actually original text: "不允許遞補，直接進入下一輪"
+                }
+                // If allowSupplement, stay on this round index, UI will show "Next Round" button
+
+                saveGameState();
+                updateMetaUI();
+
+                startButton.disabled = false; // Re-enable (it might now say "Next Round")
+                resetRoundButton.disabled = false;
+                resetAllButton.disabled = false;
+            });
+
+            if (supplementButton) {
+                supplementButton.addEventListener('click', async (e) => {
+                    e.preventDefault();
+                    if (currentRoundIndex >= appSettings.rounds.length) return;
+
+                    if (availableNumbers.length < 1) {
+                        alert("號碼池已空，無法遞補！");
+                        return;
+                    }
+
+                    startButton.disabled = true;
+                    supplementButton.disabled = true;
+
+                    const num = drawSingleNumber();
+                    takenNumbers.push(num);
+
+                    if (!roundResults[currentRoundIndex]) roundResults[currentRoundIndex] = [];
+                    roundResults[currentRoundIndex].push(num);
+
+                    const numStr = num.toString().padStart(3, '0');
+                    const digits = numStr.split('').map(Number);
+
+                    slotWheels.forEach(w => w.textContent = '');
+                    for (let i = 0; i < 3; i++) {
+                        await spinWheel(slotWheels[i], digits[i], 1000);
+                    }
+
+                    saveGameState();
+                    updateResultsUI();
+                    updateMetaUI();
+                });
+            }
+
+            resetRoundButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                // Determine which round to reset
+                // If current round *has* results, reset current.
+                // If current round *no* results (just advanced), reset previous.
+
+                let targetIdx = currentRoundIndex;
+                const currentRes = roundResults[currentRoundIndex] || [];
+
+                if (currentRes.length === 0) {
+                    targetIdx = currentRoundIndex - 1;
+                }
+
+                if (targetIdx < 0) {
+                    alert("尚無可重置的紀錄。");
+                    return;
+                }
+
+                const targetRound = appSettings.rounds[targetIdx];
+                if (!confirm(`確定要重置「${targetRound.name}」嗎？號碼將放回池中。`)) return;
+
+                // Return numbers
+                const nums = roundResults[targetIdx] || [];
+                takenNumbers = takenNumbers.filter(n => !nums.includes(n));
+                delete roundResults[targetIdx];
+
+                currentRoundIndex = targetIdx;
+                saveGameState();
+                rebuildAvailableNumbers();
+
+                slotWheels.forEach(w => w.textContent = '0');
+                updateMetaUI();
+                updateResultsUI();
+                alert(`已重置 ${targetRound.name}。`);
+            });
+
+            resetAllButton.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (!confirm("確定要重置所有輪次嗎？")) return;
+
+                currentRoundIndex = 0;
+                roundResults = {};
+                takenNumbers = [];
+
+                saveGameState();
+                rebuildAvailableNumbers();
+
+                slotWheels.forEach(w => w.textContent = '0');
+                updateMetaUI();
+                updateResultsUI();
+                alert("已全部重置。");
+            });
+
+            // --- Settings Logic ---
+            function renderSettingsUI() {
+                rangeStartInput.value = appSettings.rangeStart;
+                rangeEndInput.value = appSettings.rangeEnd;
+                excludeNumbersInput.value = appSettings.excludeNumbers.join(', ');
+
+                roundsConfigList.innerHTML = '';
+                appSettings.rounds.forEach((round, idx) => {
+                    const div = document.createElement('div');
+                    div.className = 'round-control-group';
+                    div.innerHTML = `
+                    <input type="text" value="${round.name}" style="width:100px" data-idx="${idx}" class="r-name">
+                    <label>數量:</label>
+                    <input type="number" value="${round.count}" style="width:50px" data-idx="${idx}" class="r-count" min="1">
+                    <label><input type="checkbox" ${round.allowSupplement ? 'checked' : ''} data-idx="${idx}" class="r-supp"> 遞補</label>
+                    <button type="button" class="btn-reset r-del" data-idx="${idx}">X</button>
+                `;
+                    roundsConfigList.appendChild(div);
+
+                    // Bind events for this row? Or delegating?
+                    // Simple binding:
+                    div.querySelector('.r-del').addEventListener('click', () => {
+                        appSettings.rounds.splice(idx, 1);
+                        renderSettingsUI(); // Re-render
+                    });
+                    div.querySelector('.r-name').addEventListener('change', (e) => appSettings.rounds[idx].name = e.target.value);
+                    div.querySelector('.r-count').addEventListener('change', (e) => appSettings.rounds[idx].count = parseInt(e.target.value));
+                    div.querySelector('.r-supp').addEventListener('change', (e) => appSettings.rounds[idx].allowSupplement = e.target.checked);
+                });
+            }
+
+            addRoundBtn.addEventListener('click', () => {
+                appSettings.rounds.push({ name: '新輪次', count: 1, allowSupplement: false });
+                renderSettingsUI();
+            });
+
+            saveSettingsButton.addEventListener('click', () => {
+                appSettings.rangeStart = parseInt(rangeStartInput.value);
+                appSettings.rangeEnd = parseInt(rangeEndInput.value);
+                appSettings.excludeNumbers = excludeNumbersInput.value
+                    .split(',')
+                    .map(s => parseInt(s.trim()))
+                    .filter(n => !isNaN(n));
+
+                sessionStorage.setItem('presetRaffleSettings', JSON.stringify(appSettings));
+                alert("設定已儲存！");
+
+                // Reload
+                initializeApp();
+            });
+
+            clearSettingsButton.addEventListener('click', () => {
+                sessionStorage.removeItem('presetRaffleSettings');
+                sessionStorage.removeItem('presetRaffleState');
+                alert("設定已清除！");
+                location.reload();
+            });
+
+            toggleViewButton.addEventListener('click', () => {
+                if (mainPage.style.display === 'none') {
+                    mainPage.style.display = 'block';
+                    settingsPage.style.display = 'none';
+                    toggleViewButton.textContent = '切換至後台';
+                } else {
+                    mainPage.style.display = 'none';
+                    settingsPage.style.display = 'block';
+                    toggleViewButton.textContent = '切換至主頁';
+                    renderSettingsUI();
+                }
+            });
+
+            // Run
+            initializeApp();
+        })();
+    </script>
+
+    <!-- COMPARE SLOT LOGIC -->
+    <script id="script-compare">
+        (function () {
+            // IDs Mapping
+            const slotWheels = [
+                document.getElementById('c-wheel-1'),
+                document.getElementById('c-wheel-2'),
+                document.getElementById('c-wheel-3')
+            ];
+            const gameStatus = document.getElementById('c-game-status');
+            const setupPanel = document.getElementById('c-setup-panel');
+            const playPanel = document.getElementById('c-play-panel');
+
+            const playerCountInput = document.getElementById('c-player-count');
+            const initGameBtn = document.getElementById('c-init-game-btn');
+            const currentPlayerInfo = document.getElementById('c-current-player-info');
+            const drawBtn = document.getElementById('c-draw-btn');
+            const resetGameBtn = document.getElementById('c-reset-game-btn');
+
+            const drawnNumbersList = document.getElementById('c-drawn-numbers');
+            const finalVerdict = document.getElementById('c-final-verdict');
+
+            const rangeStartInput = document.getElementById('c-range-start');
+            const rangeEndInput = document.getElementById('c-range-end');
+            const excludeNumbersInput = document.getElementById('c-exclude-numbers');
+            const saveSettingsButton = document.getElementById('c-save-settings');
+            const clearSettingsButton = document.getElementById('c-clear-settings');
+
+            const toggleViewButton = document.getElementById('c-toggle-view');
+            const mainPage = document.getElementById('c-main-page');
+            const settingsPage = document.getElementById('c-settings-page');
+
+            // State
+            let availableNumbers = [];
+            let totalPlayers = 0;
+            let currentPlayer = 1;
+            let playerResults = []; // [{ player: 1, number: 123 }, ...]
+            let isGameActive = false;
+            let currentWinCondition = 'big';
+
+            let settings = {
+                rangeStart: 1,
+                rangeEnd: 999,
+                excludeNumbers: []
+            };
+
+            function initializeApp() {
+                const savedSettings = sessionStorage.getItem('compareRaffleSettings');
+                if (savedSettings) {
+                    try {
+                        settings = JSON.parse(savedSettings);
+                    } catch (e) { console.error(e); }
+                }
+                rangeStartInput.value = settings.rangeStart;
+                rangeEndInput.value = settings.rangeEnd;
+                excludeNumbersInput.value = settings.excludeNumbers.join(', ');
+            }
+
+            function buildAvailableNumbers() {
+                availableNumbers = [];
+                for (let i = settings.rangeStart; i <= settings.rangeEnd; i++) {
+                    if (!settings.excludeNumbers.includes(i)) {
+                        availableNumbers.push(i);
+                    }
+                }
+            }
+
+            saveSettingsButton.addEventListener('click', () => {
+                const start = parseInt(rangeStartInput.value);
+                const end = parseInt(rangeEndInput.value);
+                const excludeArr = excludeNumbersInput.value
+                    .split(',')
+                    .map(s => parseInt(s.trim()))
+                    .filter(n => !isNaN(n));
+
+                settings = {
+                    rangeStart: start,
+                    rangeEnd: end,
+                    excludeNumbers: excludeArr
+                };
+                sessionStorage.setItem('compareRaffleSettings', JSON.stringify(settings));
+                alert('設定已儲存！');
+            });
+
+            clearSettingsButton.addEventListener('click', () => {
+                sessionStorage.removeItem('compareRaffleSettings');
+                alert('設定已清除！');
+                location.reload();
+            });
+
+            toggleViewButton.addEventListener('click', () => {
+                if (mainPage.style.display === 'none') {
+                    mainPage.style.display = 'block';
+                    settingsPage.style.display = 'none';
+                    toggleViewButton.textContent = '切換至後台';
+                } else {
+                    mainPage.style.display = 'none';
+                    settingsPage.style.display = 'block';
+                    toggleViewButton.textContent = '切換至主頁';
+                }
+            });
+
+            // Game Logic
+            initGameBtn.addEventListener('click', () => {
+                const count = parseInt(playerCountInput.value);
+                if (isNaN(count) || count < 2) {
+                    alert("請輸入至少 2 位參與者");
+                    return;
+                }
+
+                buildAvailableNumbers();
+                if (availableNumbers.length < count) {
+                    alert(`號碼不足！共有 ${count} 位玩家，但只有 ${availableNumbers.length} 個號碼可抽。`);
+                    return;
+                }
+
+                const radios = document.getElementsByName('c-win-condition');
+                for (const r of radios) {
+                    if (r.checked) currentWinCondition = r.value;
+                }
+
+                totalPlayers = count;
+                currentPlayer = 1;
+                playerResults = [];
+                isGameActive = true;
+
+                setupPanel.style.display = 'none';
+                playPanel.style.display = 'block';
+
+                const modeText = currentWinCondition === 'big' ? "比大 (最大者勝)" : "比小 (最小者勝)";
+                gameStatus.textContent = `遊戲進行中 - 共 ${totalPlayers} 人 [${modeText}]`;
+
+                updateGameUI();
+                drawnNumbersList.innerHTML = '';
+                finalVerdict.textContent = '';
+                slotWheels.forEach(w => w.textContent = '0');
+            });
+
+            resetGameBtn.addEventListener('click', () => {
+                if (!confirm("確定要重置遊戲嗎？目前的進度將會消失。")) return;
+                resetGame();
+            });
+
+            function resetGame() {
+                isGameActive = false;
+                setupPanel.style.display = 'block';
+                playPanel.style.display = 'none';
+                gameStatus.textContent = "設定人數並開始";
+                playerResults = [];
+                drawnNumbersList.innerHTML = '';
+                finalVerdict.textContent = '';
+                slotWheels.forEach(w => w.textContent = '0');
+                drawBtn.disabled = false;
+                drawBtn.textContent = "抽號碼";
+            }
+
+            function updateGameUI() {
+                if (currentPlayer > totalPlayers) {
+                    currentPlayerInfo.textContent = "所有玩家已抽完！";
+                    drawBtn.disabled = true;
+                    drawBtn.textContent = "遊戲結束";
+                    showFinalResult();
+                } else {
+                    currentPlayerInfo.textContent = `請 第 ${currentPlayer} 位 玩家抽獎`;
+                    drawBtn.disabled = false;
+                }
+            }
+
+            drawBtn.addEventListener('click', async () => {
+                if (!isGameActive) return;
+                if (availableNumbers.length === 0) {
+                    alert("沒有號碼了！");
+                    return;
+                }
+
+                drawBtn.disabled = true;
+
+                const randIdx = Math.floor(Math.random() * availableNumbers.length);
+                const drawnNum = availableNumbers.splice(randIdx, 1)[0];
+
+                const numStr = drawnNum.toString().padStart(3, '0');
+                const digits = numStr.split('').map(Number);
+
+                slotWheels.forEach(w => w.textContent = '');
+                for (let i = 0; i < 3; i++) {
+                    await spinWheel(slotWheels[i], digits[i], 1000);
+                }
+
+                playerResults.push({
+                    player: currentPlayer,
+                    number: drawnNum
+                });
+
+                addResultToList(currentPlayer, drawnNum);
+                currentPlayer++;
+                updateGameUI();
+            });
+
+            function addResultToList(playerIdx, number) {
+                const li = document.createElement('li');
+                li.textContent = `第 ${playerIdx} 位: ${number}`;
+                drawnNumbersList.appendChild(li);
+            }
+
+            function showFinalResult() {
+                const sorted = [...playerResults].sort((a, b) => {
+                    if (currentWinCondition === 'small') {
+                        return a.number - b.number;
+                    }
+                    return b.number - a.number;
+                });
+
+                const winner = sorted[0];
+                const winners = sorted.filter(p => p.number === winner.number);
+
+                let text = "";
+                const conditionText = currentWinCondition === 'big' ? "最大" : "最小";
+
+                if (winners.length === 1) {
+                    text = `🏆 獲勝者 (${conditionText})：第 ${winner.player} 位 (號碼 ${winner.number})`;
+                } else {
+                    const winnerNames = winners.map(w => `第 ${w.player} 位`).join(' & ');
+                    text = `🏆 平手 (${conditionText})：${winnerNames} (號碼 ${winner.number})`;
+                }
+
+                finalVerdict.textContent = text;
+
+                const items = drawnNumbersList.querySelectorAll('li');
+                winners.forEach(w => {
+                    // items are appended in order 1..N.
+                    if (items[w.player - 1]) {
+                        items[w.player - 1].style.backgroundColor = '#ffc107';
+                        items[w.player - 1].style.fontWeight = 'bold';
+                    }
+                });
+            }
+
+            function spinWheel(wheelElement, finalNumber, duration) {
+                const startTime = Date.now();
+                const interval = 50;
+                return new Promise(resolve => {
+                    const timer = setInterval(() => {
+                        const elapsedTime = Date.now() - startTime;
+                        if (elapsedTime >= duration) {
+                            clearInterval(timer);
+                            wheelElement.textContent = finalNumber;
+                            resolve();
+                            return;
+                        }
+                        wheelElement.textContent = Math.floor(Math.random() * 10);
+                    }, interval);
+                });
+            }
+
+            initializeApp();
+        })();
+    </script>
+
+</body>
+
+</html>
