@@ -28,6 +28,7 @@
             background-position: center;
             background-repeat: no-repeat;
             width: 100%;
+            /* overflow: hidden; */
         }
 
         header,
@@ -303,6 +304,26 @@
             padding: 20px;
             font-size: 24px;
             cursor: pointer;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1em;
+            user-select: none;
+            pointer-events: none;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            /* animation is set in JS */
+        }
+
+        @keyframes fall {
+            0% {
+                top: -50px;
+            }
+
+            100% {
+                top: 110vh;
+            }
         }
     </style>
 </head>
@@ -1506,6 +1527,80 @@
             initializeApp();
         })();
     </script>
+
+    <!-- <script id="snowflake-script">
+        // 雪花数量
+        const snowflakeCount = 100;
+
+        // 创建雪花
+        function createSnowflakes() {
+            for (let i = 0; i < snowflakeCount; i++) {
+                createSnowflake();
+            }
+        }
+
+        // 创建单个雪花
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.innerHTML = '❄';
+            snowflake.classList.add('snowflake');
+
+            // 随机大小 (0.5em - 2em)
+            const size = Math.random() * 1.5 + 0.5;
+            snowflake.style.fontSize = `${size}em`;
+
+            // 随机透明度 (0.5 - 1)
+            const opacity = Math.random() * 0.5 + 0.5;
+            snowflake.style.opacity = opacity;
+
+            // 随机起始位置
+            const startX = Math.random() * window.innerWidth;
+            snowflake.style.left = `${startX}px`;
+
+            // 設置 sway amount
+            const sway = Math.random() * 50 + 20;
+            snowflake.style.setProperty('--sway-amount', `${sway}px`);
+
+            // 随机下落时间 (5-15秒)
+            const duration = Math.random() * 30 + 10;
+
+            // 随机左右摆动幅度时间
+            const swayDuration = Math.random() * 4 + 2;
+
+            // 組合動畫
+            snowflake.style.animation = `fall ${duration}s linear infinite, sway ${swayDuration}s ease-in-out infinite alternate`;
+
+            document.body.appendChild(snowflake);
+        }
+
+        // 添加左右摆动的动画
+        function addSwayAnimation() {
+            const style = document.createElement('style');
+            style.innerHTML = `
+                @keyframes sway {
+                    from { transform: translateX(calc(-1 * var(--sway-amount))); }
+                    to { transform: translateX(var(--sway-amount)); }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            addSwayAnimation();
+            createSnowflakes();
+        });
+
+        // 窗口大小改变时调整雪花位置
+        window.addEventListener('resize', () => {
+            const snowflakes = document.querySelectorAll('.snowflake');
+            snowflakes.forEach(snowflake => {
+                if (parseFloat(snowflake.style.left) > window.innerWidth) {
+                    snowflake.style.left = `${Math.random() * window.innerWidth}px`;
+                }
+            });
+        });
+    </script> -->
 
 </body>
 
