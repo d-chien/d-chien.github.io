@@ -1437,7 +1437,7 @@
 
             function addResultToList(playerIdx, number) {
                 const li = document.createElement('li');
-                li.textContent = `第 ${playerIdx} 位: ${number}`;
+                li.textContent = `參賽者 ${playerIdx} 號: ${number}`;
                 drawnNumbersList.appendChild(li);
             }
 
@@ -1456,9 +1456,9 @@
                 const conditionText = currentWinCondition === 'big' ? "最大" : "最小";
 
                 if (winners.length === 1) {
-                    text = `🏆 獲勝者 (${conditionText})：第 ${winner.player} 位 (號碼 ${winner.number})`;
+                    text = `🏆 獲勝者 (${conditionText})：參賽者 ${winner.player} 號 (號碼 ${winner.number})`;
                 } else {
-                    const winnerNames = winners.map(w => `第 ${w.player} 位`).join(' & ');
+                    const winnerNames = winners.map(w => `參賽者 ${w.player} 號`).join(' & ');
                     text = `🏆 平手 (${conditionText})：${winnerNames} (號碼 ${winner.number})`;
                 }
 
