@@ -178,7 +178,8 @@
             color: white;
         }
 
-        .btn-compare {
+        .btn-compare,
+        .btn-preset {
             background-color: #10b2f2;
             color: white;
         }
@@ -371,11 +372,14 @@
                             <div class="slot-wheel" id="s-wheel-3">0</div>
                         </div>
 
-                        <div class="controls">
+                        <div class="controls"
+                            style="display: flex; align-items: center; justify-content: center; gap: 5px;">
                             <label for="s-draw-count-input">抽取數量：</label>
                             <input type="number" id="s-draw-count-input" value="1" min="1" max="100">
                             <button id="s-start-button" class="btn-start">開始拉霸</button>
                             <button id="s-reset-button" class="btn-reset">重置</button>
+                            <button type="button" id="s-go-preset-btn" class="btn-preset" style="display: block;"
+                                onclick="switchMode('preset')">前往抽獎</button>
                         </div>
                     </div>
 
