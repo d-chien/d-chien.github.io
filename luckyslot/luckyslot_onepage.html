@@ -510,6 +510,9 @@
                                         <input type="radio" name="c-win-condition" value="big" checked> 比大
                                     </label>
                                     <label style="cursor: pointer;">
+                                        <input type="radio" name="c-win-condition" value="mid"> 中間者勝
+                                    </label>
+                                    <label style="cursor: pointer;">
                                         <input type="radio" name="c-win-condition" value="small"> 比小
                                     </label>
                                 </div>
@@ -529,7 +532,7 @@
                     <div id="c-result-display" class="result-display-area">
                         <h3>頭獎爭霸結果：</h3>
                         <ul id="c-drawn-numbers" class="drawn-numbers-list"></ul>
-                        <div id="c-final-verdict" style="margin-top: 20px; font-weight: bold; color: #d63384;"></div>
+                        <div id="c-final-verdict" style="margin-top: 20px; font-weight: bold; color: white;"></div>
                     </div>
                 </div>
             </section>
@@ -1405,7 +1408,7 @@
                 setupPanel.style.display = 'none';
                 playPanel.style.display = 'block';
 
-                const modeText = currentWinCondition === 'big' ? "比大 (最大者勝)" : "比小 (最小者勝)";
+                const modeText = currentWinCondition === 'big' ? "比大" : (currentWinCondition === 'mid' ? "中間者勝" : "比小");
                 gameStatus.textContent = `遊戲進行中 - 共 ${totalPlayers} 人 [${modeText}]`;
 
                 updateGameUI();
@@ -1481,24 +1484,42 @@
             }
 
             function showFinalResult() {
-                const sorted = [...playerResults].sort((a, b) => {
-                    if (currentWinCondition === 'small') {
-                        return a.number - b.number;
-                    }
-                    return b.number - a.number;
-                });
+                let winners = [];
+                let conditionText = "";
 
-                const winner = sorted[0];
-                const winners = sorted.filter(p => p.number === winner.number);
+                if (currentWinCondition === 'mid') {
+                    // 中間者勝 logic
+                    const sorted = [...playerResults].sort((a, b) => a.number - b.number);
+                    const len = sorted.length;
+                    const midIndex = Math.floor((len - 1) / 2);
+
+                    if (len % 2 === 0) {
+                        // Even players, pick two middle ones
+                        winners = [sorted[midIndex], sorted[midIndex + 1]];
+                    } else {
+                        // Odd players, pick the middle one
+                        winners = [sorted[midIndex]];
+                    }
+                    conditionText = "中間";
+                } else {
+                    const sorted = [...playerResults].sort((a, b) => {
+                        if (currentWinCondition === 'small') {
+                            return a.number - b.number;
+                        }
+                        return b.number - a.number;
+                    });
+                    const winner = sorted[0];
+                    winners = sorted.filter(p => p.number === winner.number);
+                    conditionText = currentWinCondition === 'big' ? "最大" : "最小";
+                }
 
                 let text = "";
-                const conditionText = currentWinCondition === 'big' ? "最大" : "最小";
-
                 if (winners.length === 1) {
-                    text = `🏆 獲勝者 (${conditionText})：參賽者 ${winner.player} 號 (號碼 ${winner.number})`;
+                    text = `🏆 獲勝者 (${conditionText})：參賽者 ${winners[0].player} 號 (號碼 ${winners[0].number})`;
                 } else {
+                    // Filter out duplicate numbers if any (though they are different players)
                     const winnerNames = winners.map(w => `參賽者 ${w.player} 號`).join(' & ');
-                    text = `🏆 平手 (${conditionText})：${winnerNames} (號碼 ${winner.number})`;
+                    text = `🏆 平手 (${conditionText})：${winnerNames} (各號碼如上)`;
                 }
 
                 finalVerdict.textContent = text;
